@@ -84,6 +84,15 @@ functions, rand and the clocks answered by the core), and:
   file that is not a pack (before the check existed), turbo, input, the
   pokes, the random seed, teeth.
 
+## Windows (2026-10-17)
+
+The package played in Chimera on Windows (the 2026-10-16 nightly, headless,
+with a configuration of its own), 5500 frames of Sonic Mania from power-on into Green Hill, through the frontend
+test's witness: the memory domains after the last frame are the Linux
+reference's, byte for byte. The witness now runs to a frame count rather
+than a number of frames: on Windows a project opens two frames in, and a
+project run pauses at the end of its movie.
+
 ## Not done
 
 - Other releases' data (Steam, consoles, Sonic Origins Plus): not tried.
@@ -93,7 +102,6 @@ functions, rand and the clocks answered by the core), and:
   Origins does) are built in but were not made to work: the v3 test game
   showed a black screen. The rsdkv3 and rsdkv4 cores play those games.
 - Mods: the mod loader is off.
-- Windows: the package has not been run on Windows yet.
 - Properties: the scene, its timer and the two players' positions and
   speeds; Sonic Mania's own variables (rings, lives, score) are not yet in
   the table.

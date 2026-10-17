@@ -38,8 +38,10 @@ if emu.getsystemid() ~= "SonicMania" then finish("ERROR", "wrong system id: " ..
 pcall(function() client.speedmode(6400) end)
 pcall(function() client.invisibleemulation(true) end)
 
+-- to the frame count asked for, whichever frame the project opened at (a
+-- project run pauses at the end of its movie, so one frame more never comes)
 local frames = tonumber(job.frames) or 100
-for _ = 1, frames do
+while emu.framecount() < frames do
 	emu.frameadvance()
 end
 meta.frames = emu.framecount()
