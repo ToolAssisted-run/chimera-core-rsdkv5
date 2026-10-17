@@ -77,6 +77,7 @@ struct rsdk_settings
 	int language;        /* LANGUAGE_EN .. */
 	int screen_width;    /* 320 .. 424 */
 	int region;          /* -1: the data's own */
+	int plus;            /* the Plus content: off by default (the licence) */
 	long random_seed;
 };
 void rsdk_settings_read(struct rsdk_settings *s);

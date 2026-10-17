@@ -84,6 +84,19 @@ functions, rand and the clocks answered by the core), and:
   file that is not a pack (before the check existed), turbo, input, the
   pokes, the random seed, teeth.
 
+## The Plus content setting (user-decided, 2026-10-17)
+
+The engine's licence asks for the downloadable content off by default in
+any build given out, and allows "a configuration setting ... so long as it
+is set to off by default". The build keeps RSDK_AUTOBUILD (which forced the
+Plus flag off in two places, the dummy user core's construction and every
+stage load); patches/0002 makes both places take the project's Plus Content
+setting instead, false unless set. Measured on the owner's data: with it on
+the title is Sonic Mania Plus's and the Plus start (the autosave notice)
+follows; the core test "settings: plus" compares the first 1300 frames on
+and off, and native with sandbox on (seen failing with the setting
+ignored).
+
 ## Windows (2026-10-17)
 
 The package played in Chimera on Windows (the 2026-10-16 nightly, headless,
@@ -96,8 +109,6 @@ project run pauses at the end of its movie.
 ## Not done
 
 - Other releases' data (Steam, consoles, Sonic Origins Plus): not tried.
-- The Plus content stays off in every build (the licence); a setting for
-  it, off by default, would be allowed and is not made.
 - The engine's v3 and v4 modes (v5U plays those games' data too, as Sonic
   Origins does) are built in but were not made to work: the v3 test game
   showed a black screen. The rsdkv3 and rsdkv4 cores play those games.

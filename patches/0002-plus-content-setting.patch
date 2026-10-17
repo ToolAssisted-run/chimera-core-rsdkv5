@@ -1,0 +1,49 @@
+diff --git a/RSDKv5/RSDK/User/Dummy/DummyCore.cpp b/RSDKv5/RSDK/User/Dummy/DummyCore.cpp
+index eca055c..91cd93f 100644
+--- a/RSDKv5/RSDK/User/Dummy/DummyCore.cpp
++++ b/RSDKv5/RSDK/User/Dummy/DummyCore.cpp
+@@ -87,6 +87,8 @@ DummyCore *InitDummyCore()
+ #endif
+ 
+ #if RETRO_REV02
++bool32 chimeraPlusSetting = false; // Chimera: the project's DLC setting (rsdk-driver.cpp)
++
+ const char *userValueNames[8] = { "Ext <PLUS>" };
+ void DummyCore::StageLoad()
+ {
+@@ -95,8 +97,8 @@ void DummyCore::StageLoad()
+ #if !RSDK_AUTOBUILD
+     for (int32 v = 0; v < valueCount; ++v) AddViewableVariable(userValueNames[v], &values[v], VIEWVAR_BOOL, false, true);
+ #else
+-    // disable plus on autobuilds
+-    for (int32 v = 0; v < valueCount; ++v) values[v] = false;
++    // disable plus on autobuilds, unless the setting (off by default) asks
++    for (int32 v = 0; v < valueCount; ++v) values[v] = chimeraPlusSetting;
+ #endif
+ }
+ 
+diff --git a/RSDKv5/RSDK/User/Dummy/DummyCore.hpp b/RSDKv5/RSDK/User/Dummy/DummyCore.hpp
+index 6cdd5ef..36ad849 100644
+--- a/RSDKv5/RSDK/User/Dummy/DummyCore.hpp
++++ b/RSDKv5/RSDK/User/Dummy/DummyCore.hpp
+@@ -1,5 +1,9 @@
+ #if RETRO_REV02
+ 
++// Chimera: the project's setting for the DLC (off by default), set before the
++// engine starts
++extern bool32 chimeraPlusSetting;
++
+ // This is the "dummy" struct, it serves as the base in the event a suitable API isn't loaded (such as in this decomp)
+ // This struct should never be removed, other structs such as "SteamUserCore" would be added and "userCore" would be set to that instead
+ struct DummyCore : UserCore {
+@@ -12,6 +16,10 @@ struct DummyCore : UserCore {
+ #if !RSDK_AUTOBUILD
+         // enable dlc
+         for (int32 v = 0; v < valueCount; ++v) values[v] = true;
++#else
++        // Chimera: a build given out has the DLC off by default (the
++        // licence); a setting, off by default, may turn it on
++        for (int32 v = 0; v < valueCount; ++v) values[v] = chimeraPlusSetting;
+ #endif
+     }
+ 

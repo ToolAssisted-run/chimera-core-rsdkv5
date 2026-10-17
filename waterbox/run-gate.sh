@@ -29,8 +29,9 @@
 #                title stays
 #   pokes        Player 1's position written before a frame is the player's
 #                position in the game
-#   settings     the random seed reaches the game; screenWidth 320 draws a
-#                320-pixel picture
+#   settings     the random seed reaches the game; the Plus content setting,
+#                off by default, turns the Plus title on; screenWidth 320
+#                draws a 320-pixel picture
 #   teeth        the equivalence comparison sees a one-frame difference
 #
 # usage: run-gate.sh [-m <miniBox dir>] [-g <Data.rsdk>]
@@ -166,6 +167,19 @@ if [ -n "$game" ]; then
 		pass "settings: randomSeed 7 plays the route differently from 0 (the game's random numbers follow the seed)"
 	else
 		fail "settings: randomSeed 7 and 0 play the same route the same"
+	fi
+	# the Plus content: off by default (the title is Sonic Mania's); on, the
+	# title is Sonic Mania Plus's
+	mkdir -p "$work/plus"
+	cp "$game" "$work/plus/Data.rsdk"
+	printf '{"plus": true}' > "$work/plus/settings"
+	"$native" "$work/plus" --frames 1300 > "$work/plus/n" 2>/dev/null || true
+	"$wbx" "$core" "$work/plus" --frames 1300 > "$work/plus/w" 2>/dev/null || true
+	"$native" "$work/game" --frames 1300 > "$work/plus/off" 2>/dev/null || true
+	if [ -n "$(value "$work/plus/n" videoHash)" ] && [ "$(value "$work/plus/n" videoHash)" != "$(value "$work/plus/off" videoHash)" ]; then
+		same settings "$work/plus/w" "$work/plus/n" "plus on draws another title (Sonic Mania Plus's) than off, the default; native = sandbox"
+	else
+		fail "settings: plus on and off draw the same first 1300 frames"
 	fi
 	mkdir -p "$work/narrow"
 	cp "$game" "$work/narrow/Data.rsdk"

@@ -74,6 +74,7 @@ void rsdk_settings_read(struct rsdk_settings *s)
 	snprintf(str, sizeof str, "data");
 	wbx_setting_str("region", str, (int)sizeof str);
 	s->region = !strcmp(str, "us") ? 0 : !strcmp(str, "jp") ? 1 : !strcmp(str, "eu") ? 2 : -1;
+	s->plus = wbx_setting_bool("plus", 0);
 	s->random_seed = wbx_setting_long("randomSeed", 0);
 }
 

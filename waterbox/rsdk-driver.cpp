@@ -123,6 +123,9 @@ int rsdkdrv_init(char *err, int errsize)
 	char arg0[] = "chimera";
 	char *argv[] = { arg0, NULL };
 	linkGameLogic = (LogicLinkHandle)LinkGameLogicDLL;
+	/* the Plus content, off unless the project's setting asks (patches/0002:
+	 * the build is RSDK_AUTOBUILD, which would keep it off) */
+	SKU::chimeraPlusSetting = g.settings.plus ? true : false;
 	InitCoreAPI();
 	InitRetroEngine(1, argv);
 	if (!RenderDevice::isRunning || !engine.initialized)

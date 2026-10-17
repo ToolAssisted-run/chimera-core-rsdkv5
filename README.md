@@ -23,13 +23,15 @@ contains none of the game.
 
 ## Settings
 
-Language, region, screen width (320 to 424 pixels, 424 by default) and the
-random seed. Each is recorded in the project.
+Language, region, Plus content (off by default), screen width (320 to 424
+pixels, 424 by default) and the random seed. Each is recorded in the
+project.
 
 ## What it does not do yet
 
-- The Plus content (Encore mode, Mighty and Ray) stays off in every build,
-  as the decompilations' licence requires.
+- The Plus content (the Plus title, Encore mode, Mighty and Ray) is off
+  unless the project turns its Plus Content setting on, as the engine
+  decompilation's licence requires (a setting off by default).
 - Mods (the decompilation's mod loader) are off.
 
 [docs/PLAN.md](docs/PLAN.md) says what was decided and measured,
