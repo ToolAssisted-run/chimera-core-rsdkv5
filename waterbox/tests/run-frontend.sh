@@ -217,6 +217,13 @@ elif [ "$(meta gui game_list)" = "$nprops" ] && [ "$(meta gui game_x)" = "$(meta
 else
 	report "gui:game-properties" FAIL "list $(meta gui game_list)/$nprops, x $(meta gui game_x)/$(meta gui game_x_bytes), set $(meta gui game_set)->$(meta gui game_x_after_set) $(meta gui game_error)"
 fi
+if [ "$(meta gui game_list)" = "absent" ]; then
+	:
+elif [ "$(meta gui game_character)" = "Sonic" ] && [ "$(meta gui game_rings_set)" = "true" ] && [ "$(meta gui game_rings)" = "77" ] && [ "$(meta gui game_shield_set)" = "false" ]; then
+	report "gui:mania-variables" PASS "Player 1.Character is named Sonic; Player 1.Rings set to 77 took; Player 1.Shield (read only) refused"
+else
+	report "gui:mania-variables" FAIL "character '$(meta gui game_character)', rings set $(meta gui game_rings_set)->$(meta gui game_rings), shield set $(meta gui game_shield_set) $(meta gui game_error)"
+fi
 
 # the core's own refusal reaches the frontend: a screen width the core does
 # not take, which Chimera passes on as a number and only the core refuses

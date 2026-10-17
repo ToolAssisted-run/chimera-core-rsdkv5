@@ -18,7 +18,8 @@ data file is never in the repository or the package: the user provides it.
 - `waterbox/rsdk-driver.cpp`: the machine (a frame, the sound, the picture).
   `rsdk-files.c`: every file the engine opens. `seams.c`: what SDL is
   answered with. `detmath.c`: the math functions. `game-state.cpp`: the
-  memory domains and properties. `wbx-entry.c`: the guest's exports.
+  memory domains and properties; `mania-state.c`: where Sonic Mania keeps a
+  player's rings, lives and score, from the game's own headers. `wbx-entry.c`: the guest's exports.
 - `waterbox/waterbox.config`, `file_slots.json`, `default_keybinds.json`,
   `package-licenses.json`: the declarations.
 - `waterbox/run-gate.sh`: the core's tests. `waterbox/tests/`: the frontend

@@ -106,6 +106,33 @@ reference's, byte for byte. The witness now runs to a frame count rather
 than a number of frames: on Windows a project opens two frames in, and a
 project run pauses at the end of its movie.
 
+## Sonic Mania's own variables (2026-10-17)
+
+The property table now has, beside the engine's (the scene, its timer, the
+two players' positions and speeds), what Sonic Mania itself keeps for a
+player: Character (Sonic, Tails, Knuckles, and Mighty and Ray in the Plus
+build), Rings, Lives, Score, Shield, Invincible Timer, Speed Shoes Timer,
+Super State and Is Player, and in a Game group the game's mode (Mania,
+Encore, Time Attack, Competition) and its continues. The offsets and the
+named values come from the game's own headers: `waterbox/mania-state.c` is
+compiled with them, so a change to the game's structures moves the table
+with it. A player's fields are read only from an object that is the game's
+Player; they are zero, and Is Player false, while it is not.
+
+Rings, lives and score can be set. Shield and the two timers are read only:
+a shield is also an object of its own, and invincibility and speed shoes
+also start stars, music and speeds, so writing the number alone would give
+half of one.
+
+Measured: on the core tests' route, in Green Hill, Player 1 is Sonic with 3
+lives and 0 rings in Mania mode and Player 2 is Tails; rings 50, lives 9 and
+score 12340 written before frame 4950 are still the game's 40 frames later,
+in both builds (the core test "variables", seen failing with the rings not
+written back). In Chimera, Lua's game.describe names the character Sonic,
+game.set takes Player 1.Rings and refuses Player 1.Shield (the frontend
+test "gui:mania-variables", seen failing with Shield writable). 17 core
+tests and 10 frontend tests pass with the game; the contract tests 20.
+
 ## Not done
 
 - Other releases' data (Steam, consoles, Sonic Origins Plus): not tried.
@@ -113,6 +140,3 @@ project run pauses at the end of its movie.
   Origins does) are built in but were not made to work: the v3 test game
   showed a black screen. The rsdkv3 and rsdkv4 cores play those games.
 - Mods: the mod loader is off.
-- Properties: the scene, its timer and the two players' positions and
-  speeds; Sonic Mania's own variables (rings, lives, score) are not yet in
-  the table.

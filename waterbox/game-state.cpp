@@ -1,6 +1,7 @@
 /* game-state.cpp - what the tools see of the game: chimera docs/game-cores.md.
  *
- * Two memory domains, both the core's own blocks:
+ * Two memory domains, both the core's own blocks (Sonic Mania's own fields
+ * are found by mania-state.c, from the game's headers):
  *
  *   - "Game State": copied from the engine after every step - the engine's
  *     state, the scene and its timer. Read-only, as the engine derives them.
@@ -18,6 +19,7 @@
 
 #include "RSDK/Core/RetroEngine.hpp"
 
+#include "mania-state.h"
 #include "rsdk-driver.h"
 
 using namespace RSDK;
@@ -34,7 +36,10 @@ struct __attribute__((packed)) GameState
 	int32_t time_counter;     /* 16 */
 	uint8_t time_enabled;     /* 20 */
 	uint8_t screens;          /* 21 */
-	uint8_t pad[10];
+	uint8_t has_globals;      /* 22: the game has made its global variables */
+	uint8_t pad;
+	int32_t game_mode;        /* 24: globals->gameMode */
+	int32_t continues;        /* 28: globals->continues */
 	char scene_name[32];      /* 32 */
 	char scene_folder[16];    /* 64 */
 	char scene_id[8];         /* 80 */
@@ -49,8 +54,34 @@ struct __attribute__((packed)) PlayerState
 	uint16_t class_id;                /* 28 */
 	uint8_t on_ground, direction;     /* 30, 31 */
 	uint8_t collision_mode, collision_plane, visible, active;   /* 32 */
+	/* Sonic Mania's own part of a player (EntityPlayer), when the object is
+	 * one; zeros otherwise */
+	int32_t character;                /* 36 */
+	int32_t rings, lives, score;      /* 40, 44, 48 */
+	int32_t shield;                   /* 52 */
+	int32_t invincible_timer;         /* 56 */
+	int32_t speed_shoes_timer;        /* 60 */
+	int32_t super_state;              /* 64 */
+	uint8_t is_player;                /* 68 */
+	uint8_t pad[3];
 };
-static_assert(sizeof(PlayerState) == 36, "PlayerState layout");
+static_assert(sizeof(PlayerState) == 72, "PlayerState layout");
+
+/* the object in slot p, when it is one of Sonic Mania's players */
+uint8_t *mania_player(int p)
+{
+	const int32_t cls = mania_player_class();
+	if (cls < 0 || objectEntityList[p].classID != (uint16)cls) return NULL;
+	return (uint8_t *)&objectEntityList[p];
+}
+
+inline int32_t rd(const uint8_t *base, size_t off)
+{
+	int32_t v;
+	memcpy(&v, base + off, 4);
+	return v;
+}
+inline void wr(uint8_t *base, size_t off, int32_t v) { memcpy(base + off, &v, 4); }
 
 GameState gs;
 PlayerState ps[2];
@@ -69,6 +100,11 @@ void gamestate_from_game(void)
 	gs.time_counter = sceneInfo.timeCounter;
 	gs.time_enabled = sceneInfo.timeEnabled ? 1 : 0;
 	gs.screens = (uint8_t)videoSettings.screenCount;
+	const struct mania_layout *ml = mania_layout();
+	const uint8_t *glob = mania_globals();
+	gs.has_globals = glob ? 1 : 0;
+	gs.game_mode = glob ? rd(glob, ml->global_game_mode) : 0;
+	gs.continues = glob ? rd(glob, ml->global_continues) : 0;
 	memset(gs.scene_name, 0, sizeof gs.scene_name);
 	memset(gs.scene_folder, 0, sizeof gs.scene_folder);
 	memset(gs.scene_id, 0, sizeof gs.scene_id);
@@ -97,6 +133,16 @@ void gamestate_from_game(void)
 		o.collision_plane = e.collisionPlane;
 		o.visible = e.visible;
 		o.active = e.active;
+		const uint8_t *pl = mania_player(p);
+		o.is_player = pl ? 1 : 0;
+		o.character = pl ? rd(pl, ml->character_id) : 0;
+		o.rings = pl ? rd(pl, ml->rings) : 0;
+		o.lives = pl ? rd(pl, ml->lives) : 0;
+		o.score = pl ? rd(pl, ml->score) : 0;
+		o.shield = pl ? rd(pl, ml->shield) : 0;
+		o.invincible_timer = pl ? rd(pl, ml->invincible_timer) : 0;
+		o.speed_shoes_timer = pl ? rd(pl, ml->speed_shoes_timer) : 0;
+		o.super_state = pl ? rd(pl, ml->super_state) : 0;
 	}
 }
 
@@ -116,6 +162,18 @@ void gamestate_to_game(void)
 		e.angle = o.angle;
 		e.rotation = o.rotation;
 		e.direction = o.direction;
+		/* Sonic Mania's part only into an object that is still a player, and
+		 * only the numbers that are the whole of the thing: a shield is also
+		 * an object of its own, and invincibility and speed shoes also start
+		 * stars, music and speeds, so those are read only */
+		uint8_t *pl = mania_player(p);
+		if (pl && o.is_player)
+		{
+			const struct mania_layout *ml = mania_layout();
+			wr(pl, ml->rings, o.rings);
+			wr(pl, ml->lives, o.lives);
+			wr(pl, ml->score, o.score);
+		}
 	}
 }
 
@@ -151,7 +209,7 @@ int rsdkdrv_domain_writable(int i) { return i == 1; }
 
 const char *rsdkdrv_game_properties(void)
 {
-	static char json[16384];
+	static char json[32768];
 	if (json[0]) return json;
 	int n = 0;
 #define P(...) n += snprintf(json + n, sizeof json - (size_t)n, __VA_ARGS__)
@@ -167,6 +225,15 @@ const char *rsdkdrv_game_properties(void)
 	GS("Scene.Time Counter", 16, "s32", ", \"group\": \"Scene\"");
 	GS("Scene.Time Enabled", 20, "bool", ", \"group\": \"Scene\"");
 	GS("Engine.Screens", 21, "u8", ", \"group\": \"Engine\"");
+	const struct mania_layout *ml = mania_layout();
+	{
+		char vals[256];
+		int k = snprintf(vals, sizeof vals, ", \"group\": \"Game\", \"description\": \"The game's mode (0 before the game has started)\", \"values\": { \"%d\": \"Mania\"", ml->mode_mania);
+		if (ml->mode_encore >= 0) k += snprintf(vals + k, sizeof vals - (size_t)k, ", \"%d\": \"Encore\"", ml->mode_encore);
+		snprintf(vals + k, sizeof vals - (size_t)k, ", \"%d\": \"Time Attack\", \"%d\": \"Competition\" }", ml->mode_time_attack, ml->mode_competition);
+		GS("Game.Mode", 24, "s32", vals);
+	}
+	GS("Game.Continues", 28, "s32", ", \"group\": \"Game\"");
 	P("    { \"name\": \"Scene.Name\", \"domain\": \"Game State\", \"offset\": 32, \"type\": \"string\", \"length\": 32, \"writable\": false, \"group\": \"Scene\" },\n");
 	P("    { \"name\": \"Scene.Folder\", \"domain\": \"Game State\", \"offset\": 64, \"type\": \"string\", \"length\": 16, \"writable\": false, \"group\": \"Scene\" },\n");
 	P("    { \"name\": \"Scene.ID\", \"domain\": \"Game State\", \"offset\": 80, \"type\": \"string\", \"length\": 8, \"writable\": false, \"group\": \"Scene\" },\n");
@@ -185,6 +252,12 @@ const char *rsdkdrv_game_properties(void)
 		{ "Collision Plane", 33, "u8", 0, "" },
 		{ "Visible", 34, "u8", 0, "" },
 		{ "Active", 35, "u8", 0, "" },
+		{ "Rings", 40, "s32", 1, "Sonic Mania's ring count" },
+		{ "Lives", 44, "s32", 1, "" },
+		{ "Score", 48, "s32", 1, "" },
+		{ "Invincible Timer", 56, "s32", 0, "Frames of invincibility left" },
+		{ "Speed Shoes Timer", 60, "s32", 0, "Frames of speed shoes left" },
+		{ "Is Player", 68, "bool", 0, "The object is one of Sonic Mania's players (the fields above Character are zero when not)" },
 	};
 	for (int p = 0; p < 2; p++)
 		for (size_t i = 0; i < sizeof k_player / sizeof k_player[0]; i++)
@@ -193,8 +266,22 @@ const char *rsdkdrv_game_properties(void)
 			  p + 1, k_player[i].name, p * (int)sizeof(PlayerState) + k_player[i].off, k_player[i].type, p + 1,
 			  k_player[i].writable ? "" : ", \"writable\": false");
 			if (k_player[i].desc[0]) P(", \"description\": \"%s\"", k_player[i].desc);
-			P(" }%s\n", p == 1 && i == sizeof k_player / sizeof k_player[0] - 1 ? "" : ",");
+			P(" },\n");
 		}
+	for (int p = 0; p < 2; p++)
+	{
+		const int base = p * (int)sizeof(PlayerState);
+		P("    { \"name\": \"Player %d.Character\", \"domain\": \"Players\", \"offset\": %d, \"type\": \"s32\", \"group\": \"Player %d\", \"writable\": false, "
+		  "\"values\": { \"%d\": \"Sonic\", \"%d\": \"Tails\", \"%d\": \"Knuckles\"", p + 1, base + 36, p + 1, ml->sonic, ml->tails, ml->knuckles);
+		if (ml->mighty >= 0) P(", \"%d\": \"Mighty\", \"%d\": \"Ray\"", ml->mighty, ml->ray);
+		P(" } },\n");
+		P("    { \"name\": \"Player %d.Shield\", \"domain\": \"Players\", \"offset\": %d, \"type\": \"s32\", \"group\": \"Player %d\", \"writable\": false, "
+		  "\"values\": { \"%d\": \"None\", \"%d\": \"Blue\", \"%d\": \"Bubble\", \"%d\": \"Fire\", \"%d\": \"Lightning\" } },\n",
+		  p + 1, base + 52, p + 1, ml->shield_none, ml->shield_blue, ml->shield_bubble, ml->shield_fire, ml->shield_lightning);
+		P("    { \"name\": \"Player %d.Super State\", \"domain\": \"Players\", \"offset\": %d, \"type\": \"s32\", \"group\": \"Player %d\", \"writable\": false, "
+		  "\"values\": { \"%d\": \"None\", \"%d\": \"Fading In\", \"%d\": \"Super\", \"%d\": \"Fading Out\", \"%d\": \"Done\" } }%s\n",
+		  p + 1, base + 64, p + 1, ml->super_none, ml->super_fade_in, ml->super_super, ml->super_fade_out, ml->super_done, p == 1 ? "" : ",");
+	}
 	P("  ]\n}\n");
 #undef GS
 #undef P

@@ -73,6 +73,11 @@ if game ~= nil and game.list ~= nil then
 		meta.game_x_after_set = game.get("Player 1.X")
 		meta.game_unknown = tostring(game.get("No Such Property"))
 		meta.game_time_ms = game.get("Scene.Time Ms")
+		-- Sonic Mania's own: a value by its name, rings set, a shield refused (read only)
+		meta.game_character = tostring(game.describe("Player 1.Character").label)
+		meta.game_rings_set = tostring(game.set("Player 1.Rings", 77))
+		meta.game_rings = game.get("Player 1.Rings")
+		meta.game_shield_set = tostring(game.set("Player 1.Shield", 1))
 	end)
 	if not ok then meta.game_error = tostring(err) end
 else

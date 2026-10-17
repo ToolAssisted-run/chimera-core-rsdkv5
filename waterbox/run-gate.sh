@@ -29,6 +29,9 @@
 #                title stays
 #   pokes        Player 1's position written before a frame is the player's
 #                position in the game
+#   variables    Sonic Mania's own: in Green Hill Player 1 is Sonic with 3
+#                lives in Mania mode; rings, lives and score written before a
+#                frame are the game's from then on
 #   settings     the random seed reaches the game; the Plus content setting,
 #                off by default, turns the Plus title on; screenWidth 320
 #                draws a 320-pixel picture
@@ -121,7 +124,7 @@ if [ -n "$game" ]; then
 	cp "$game" "$work/game/Data.rsdk"
 	route="--press 1400:S:5 --press 1700:A:5 --press 2000:A:5 --press 2300:A:5 --press 2600:A:5 --press 3000:R:2200 --press 3300:A:10"
 	n=5200
-	props="Engine.State,Scene.Category,Scene.List Position,Player 1.X"
+	props="Engine.State,Scene.Category,Scene.List Position,Player 1.X,Player 1.Character,Player 1.Lives,Player 1.Rings,Game.Mode,Player 2.Character"
 	"$native" "$work/game" --frames $n $route --trace "$work/g.t" --trace-props "$props" > "$work/g.n" 2>/dev/null || true
 	"$wbx" "$core" "$work/game" --frames $n $route > "$work/g.w" 2>/dev/null || true
 	same equivalence "$work/g.w" "$work/g.n" "native = sandbox, $n frames (lag $(value "$work/g.n" lagFrames); scene at the end: category $(at "$work/g.t" $((n - 1)) 2), position $(at "$work/g.t" $((n - 1)) 3))"
@@ -157,6 +160,18 @@ if [ -n "$game" ]; then
 		pass "pokes: Player 1.X set to 160 pixels before frame 4950 (running in Green Hill) is $after after it, moved on from there (without the poke $before); both builds the same"
 	else
 		fail "pokes: without $before, with $after"
+	fi
+
+	vp="Player 1.Rings,Player 1.Lives,Player 1.Score"
+	"$native" "$work/game" --frames 4991 $route --poke "4950:Player 1.Rings=50" --poke "4950:Player 1.Lives=9" --poke "4950:Player 1.Score=12340" --trace "$work/v.t" --trace-props "$vp" > /dev/null 2>&1 || true
+	"$wbx" "$core" "$work/game" --frames 4991 $route --poke "4950:Player 1.Rings=50" --poke "4950:Player 1.Lives=9" --poke "4950:Player 1.Score=12340" --trace "$work/v.w" --trace-props "$vp" > /dev/null 2>&1 || true
+	plain="$(at "$work/g.t" 4949 5) $(at "$work/g.t" 4949 6) $(at "$work/g.t" 4949 7) $(at "$work/g.t" 4949 8) $(at "$work/g.t" 4949 9)"
+	poked="$(at "$work/v.t" 4950 1) $(at "$work/v.t" 4950 2) $(at "$work/v.t" 4950 3)"
+	held="$(at "$work/v.t" 4990 1) $(at "$work/v.t" 4990 2) $(at "$work/v.t" 4990 3)"
+	if [ "$plain" = "1 3 0 0 2" ] && [ "$poked" = "50 9 12340" ] && [ "$held" = "50 9 12340" ] && cmp -s "$work/v.t" "$work/v.w"; then
+		pass "variables: in Green Hill Player 1 is Sonic (Character 1) with 3 lives and 0 rings in Mania mode, Player 2 Tails (2); rings 50, lives 9 and score 12340 written before frame 4950 are the game's 40 frames on; both builds the same"
+	else
+		fail "variables: character, lives, rings, mode, player 2 '$plain'; written '$poked', 40 frames on '$held'"
 	fi
 
 	mkdir -p "$work/seed7"

@@ -95,7 +95,7 @@ MANIA_CFLAGS_COMMON := -std=gnu11 -O2 -fno-ipa-icf $(NO_BUILTIN_MATH) $(MANIA_DE
 # ---- the core
 CORE_C_NAMES := rsdk-files seams detmath wbx-entry
 CORE_CXX_NAMES := rsdk-driver game-state
-CORE_HDRS := rsdk-driver.h $(wildcard compat/*/*.h)
+CORE_HDRS := rsdk-driver.h mania-state.h $(wildcard compat/*/*.h)
 CORE_CFLAGS_COMMON := -std=gnu11 -O2 -I$(INC_DIR) -I$(SDL)/include
 CORE_CXXFLAGS_COMMON := $(RSDK_CXXFLAGS_COMMON)
 

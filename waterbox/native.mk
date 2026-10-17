@@ -24,7 +24,7 @@ SDL_OBJS := $(patsubst $(SDL)/%.c,$(B)/sdl/%.o,$(SDL_SRCS))
 CODEC_OBJS := $(patsubst $(ROOT)/extern/%.c,$(B)/codec/%.o,$(OGG_SRCS) $(THEORA_SRCS) $(MINIZ_SRCS))
 RSDK_OBJS := $(patsubst $(RSDK)/%.cpp,$(B)/rsdk/%.o,$(RSDK_SRCS))
 MANIA_OBJS := $(patsubst $(MANIA)/%.c,$(B)/mania/%.o,$(MANIA_SRCS))
-CORE_OBJS := $(addprefix $(B)/core/,$(addsuffix .o,$(CORE_C_NAMES) $(CORE_CXX_NAMES)))
+CORE_OBJS := $(addprefix $(B)/core/,$(addsuffix .o,$(CORE_C_NAMES) $(CORE_CXX_NAMES))) $(B)/core/mania-state.o
 
 all: $(B)/run-native $(B)/run-wbx
 
@@ -43,6 +43,11 @@ $(B)/rsdk/%.o: $(RSDK)/%.cpp $(PATCH_STAMP) $(INC_DIR)/SDL2/.stamp $(B)/flags
 $(B)/mania/%.o: $(MANIA)/%.c $(B)/flags
 	@mkdir -p $(dir $@)
 	gcc $(MANIA_CFLAGS) -c -o $@ $<
+
+# mania-state.c reads the game's own headers: the game's flags
+$(B)/core/mania-state.o: mania-state.c mania-state.h $(B)/flags
+	@mkdir -p $(dir $@)
+	gcc $(MANIA_CFLAGS) -I. -c -o $@ $<
 
 $(B)/core/%.o: %.c $(CORE_HDRS) $(PATCH_STAMP) $(INC_DIR)/SDL2/.stamp $(B)/flags
 	@mkdir -p $(dir $@)
