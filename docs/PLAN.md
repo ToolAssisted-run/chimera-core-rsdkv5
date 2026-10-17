@@ -133,6 +133,39 @@ game.set takes Player 1.Rings and refuses Player 1.Shield (the frontend
 test "gui:mania-variables", seen failing with Shield writable). 17 core
 tests and 10 frontend tests pass with the game; the contract tests 20.
 
+## Developer menu, save data, four players, player name (2026-10-17, chimera#302, user-decided)
+
+The owner chose these four from a user's list.
+
+- **Developer menu**: a Developer Menu setting writes devMenu=y into the
+  engine's settings file and adds a Dev Menu control. The engine opens the
+  menu when Escape goes down, in its SDL event loop (ProcessEvents), which
+  this driver does not run: the players' buttons are set in the keyboard
+  state instead. So a press of Dev Menu calls what Escape calls there,
+  OpenDevMenu or CloseDevMenu, before the frame. With the setting on the
+  game also runs as a developer's build (the engine's PLATFORM_DEV), as
+  under the decompilation. The control is live only with the setting on.
+- **Save data**: the files the game writes (SaveData.bin and any other but
+  Settings.ini and the engine's log) are the Export Save Data group, and a
+  Save data slot puts them back before the seal. Settings.ini is refused:
+  it is the project's settings.
+- **Players 3 and 4**: a Players setting, 2 by default. At 4, players 3 and
+  4 get the twelve buttons each (the engine's keyboard devices 3 and 4, as
+  the Plus content's competition mode takes four players). At 2 those
+  buttons are not live, so a project made before keeps its inputs.
+- **Player name**: a Player Name setting, written as username= into the
+  engine's settings file (printable characters, no brackets, semicolons or
+  line breaks, at most 31). The main menu shows it at the bottom left.
+
+Tests (each failed with its part taken out): `save data` (the route writes
+SaveData.bin, 65,536 bytes; given back, the save select shows slot 1 in
+Green Hill where a fresh game shows a new game; Settings.ini is refused;
+native = sandbox), `developer menu` (the picture changes with the setting
+on, not with it off; native = sandbox), `players` (with Players 4, player
+3's Start on the title does what player 1's does; with 2 it does nothing;
+native = sandbox) and `settings` for the name (CHIMERA draws another main
+menu; native = sandbox).
+
 ## Not done
 
 - Other releases' data (Steam, consoles, Sonic Origins Plus): not tried.

@@ -1,4 +1,15 @@
 {
-  "_comment": "This file lists the kinds of file a project of this core can hold, and it lists none. A Sonic Mania project supplies the game's data file as firmware (Data.rsdk, in waterbox.config). The New Project window therefore skips its files page.",
-  "slots": []
+  "_comment": "This file lists the kinds of file a project of this core can hold. A Sonic Mania project supplies the game's data file as firmware (Data.rsdk, in waterbox.config); the one slot is the game's saves.",
+  "slots": [
+    {
+      "id": "savedata",
+      "title": "Save data",
+      "min": 0,
+      "max": 32,
+      "formats": [
+        "bin"
+      ],
+      "help": "The files the game wrote, as Emulator > Export Save Data gave them: SaveData.bin (the save files' progress) and any other the game keeps, under their own names. They are put in place before the game starts, so the game finds them as its own."
+    }
+  ]
 }

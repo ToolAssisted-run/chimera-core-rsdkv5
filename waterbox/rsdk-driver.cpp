@@ -47,6 +47,7 @@ struct Driver
 	int init_done;
 
 	uint8_t held[RSDK_BTN_COUNT];
+	int dev_held, dev_sent;   /* the Dev Menu button, and what the engine was last told of it */
 
 	uint64_t frames;
 	int render;
@@ -145,7 +146,28 @@ int rsdkdrv_init(char *err, int errsize)
 
 void rsdkdrv_set_button(int index, int down)
 {
-	if (index >= 0 && index < RSDK_BTN_COUNT) g.held[index] = down ? 1 : 0;
+	/* players 3 and 4 only when the Players setting says 4 */
+	if (index >= 0 && index < RSDK_BTN_PER_PLAYER * g.settings.players) g.held[index] = down ? 1 : 0;
+	if (index == RSDK_BTN_DEV_MENU) g.dev_held = down && g.settings.dev_menu ? 1 : 0;
+}
+
+int rsdkdrv_dev_menu(void) { return g.settings.dev_menu; }
+int rsdkdrv_players(void) { return g.settings.players; }
+
+/* The engine opens and closes its developer menu when Escape goes down
+ * (SDL2RenderDevice.cpp ProcessEvents). This driver does not run
+ * ProcessEvents - the players' buttons are set in the keyboard state instead
+ * - so a press of the Dev Menu button does here what that key does there,
+ * at the same point, before the frame (chimera#302). */
+static void dev_menu_button(void)
+{
+	int press = g.dev_held && !g.dev_sent;
+	g.dev_sent = g.dev_held;
+	if (!press || !engine.devMenu) return;
+	if (sceneInfo.state == ENGINESTATE_DEVMENU)
+		CloseDevMenu();
+	else
+		OpenDevMenu();
 }
 
 void rsdkdrv_frame(int render)
@@ -164,6 +186,7 @@ void rsdkdrv_frame(int render)
 	 * a scene (ENGINESTATE_LOAD: files, objects' startup, no update) */
 	g.read = sceneInfo.state != ENGINESTATE_LOAD;
 	gamestate_to_game();
+	dev_menu_button();
 	RunRetroEngineFrame();
 	g.frames++;
 	memset(g.mix, 0, sizeof g.mix);

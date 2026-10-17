@@ -69,6 +69,9 @@ static intfn g_GetVsyncNumerator, g_GetVsyncDenominator;
 static u64fn g_GetCycleCount;
 static voidfn_i g_SetRenderingEnabled;
 static ptrfn g_GetGameProperties;
+static intfn g_GetSaveDataFileCount;
+static ptrfn_i g_GetSaveDataFileName, g_GetSaveDataFileBuffer;
+static i64fn_i g_GetSaveDataFileSize;
 static int g_rerecord;
 static int g_session;
 static long g_sessionAt = -1;
@@ -109,6 +112,10 @@ static int core_domain_count(void) { return g_GetMemoryDomainCount(); }
 static const char *core_domain_name(int i) { return (const char *)g_GetMemoryDomainName(i); }
 static uint8_t *core_domain_ptr(int i) { return (uint8_t *)g_GetMemoryDomainPtr(i); }
 static int64_t core_domain_size(int i) { return g_GetMemoryDomainSize(i); }
+static int32_t core_savedata_count(void) { return g_GetSaveDataFileCount(); }
+static const char *core_savedata_name(int32_t i) { return (const char *)g_GetSaveDataFileName(i); }
+static int64_t core_savedata_size(int32_t i) { return g_GetSaveDataFileSize(i); }
+static const uint8_t *core_savedata_buffer(int32_t i) { return (const uint8_t *)g_GetSaveDataFileBuffer(i); }
 static int core_vsync_numerator(void) { return g_GetVsyncNumerator(); }
 static int core_vsync_denominator(void) { return g_GetVsyncDenominator(); }
 static uint64_t core_clock(void) { return g_GetCycleCount(); }
@@ -168,7 +175,19 @@ static void build_host(void)
 	g_host = (mb_host *)r.data;
 
 	/* the whole work dir, under the real names; the harness's own outputs
-	 * (.tga, .txt, .json, .raw, .bin) are not the guest's */
+	 * (.tga, .txt, .json, .raw, .bin) are not the guest's, unless the slots
+	 * file names one (a save, SData.bin, given back) */
+	char slots[8192] = "";
+	{
+		char sp[4096];
+		snprintf(sp, sizeof sp, "%s/slots", g_workdir);
+		FILE *sf = fopen(sp, "rb");
+		if (sf)
+		{
+			slots[fread(slots, 1, sizeof slots - 1, sf)] = 0;
+			fclose(sf);
+		}
+	}
 	DIR *d = opendir(g_workdir);
 	if (!d) { perror(g_workdir); exit(1); }
 	struct dirent *de;
@@ -180,7 +199,10 @@ static void build_host(void)
 		if (stat(path, &st) != 0 || !S_ISREG(st.st_mode))
 			continue;
 		const char *dot = strrchr(de->d_name, '.');
-		if (dot && (!strcmp(dot, ".tga") || !strcmp(dot, ".txt") || !strcmp(dot, ".json") || !strcmp(dot, ".raw") || !strcmp(dot, ".bin")))
+		char quoted[300];
+		snprintf(quoted, sizeof quoted, "\"%s\"", de->d_name);
+		if (dot && (!strcmp(dot, ".tga") || !strcmp(dot, ".txt") || !strcmp(dot, ".json") || !strcmp(dot, ".raw") || !strcmp(dot, ".bin"))
+		    && !strstr(slots, quoted))
 			continue;
 		FILE *f = fopen(path, "rb");
 		if (!f) { perror(path); exit(1); }
@@ -211,6 +233,10 @@ static void resolve_exports(void)
 	g_GetMemoryDomainName = (ptrfn_i)proc(g_host, "GetMemoryDomainName");
 	g_GetMemoryDomainPtr = (ptrfn_i)proc(g_host, "GetMemoryDomainPtr");
 	g_GetMemoryDomainSize = (i64fn_i)proc(g_host, "GetMemoryDomainSize");
+	g_GetSaveDataFileCount = (intfn)proc(g_host, "GetSaveDataFileCount");
+	g_GetSaveDataFileName = (ptrfn_i)proc(g_host, "GetSaveDataFileName");
+	g_GetSaveDataFileSize = (i64fn_i)proc(g_host, "GetSaveDataFileSize");
+	g_GetSaveDataFileBuffer = (ptrfn_i)proc(g_host, "GetSaveDataFileBuffer");
 	g_GetVsyncNumerator = (intfn)proc(g_host, "GetVsyncNumerator");
 	g_GetVsyncDenominator = (intfn)proc(g_host, "GetVsyncDenominator");
 	g_GetCycleCount = (u64fn)proc(g_host, "GetCycleCount");
@@ -253,6 +279,10 @@ int main(int argc, char **argv)
 		.domain_name = core_domain_name,
 		.domain_ptr = core_domain_ptr,
 		.domain_size = core_domain_size,
+		.savedata_count = core_savedata_count,
+		.savedata_name = core_savedata_name,
+		.savedata_size = core_savedata_size,
+		.savedata_buffer = core_savedata_buffer,
 		.vsync_numerator = core_vsync_numerator,
 		.vsync_denominator = core_vsync_denominator,
 		.pre_frame = core_pre_frame,

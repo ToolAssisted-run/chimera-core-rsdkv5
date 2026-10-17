@@ -24,8 +24,16 @@ contains none of the game.
 ## Settings
 
 Language, region, Plus content (off by default), screen width (320 to 424
-pixels, 424 by default) and the random seed. Each is recorded in the
-project.
+pixels, 424 by default), the random seed, the number of players (2, or 4
+for Competition), the player name the main menu shows, and the engine's
+developer menu (with a Dev Menu control to open it). Each is recorded in
+the project.
+
+## Save data
+
+Emulator > Export Save Data gives the files the game saved, such as
+SaveData.bin. A project takes them back in its Save data slot, under those
+names.
 
 ## What it does not do yet
 

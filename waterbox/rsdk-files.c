@@ -32,10 +32,12 @@
 
 #include <emulibc.h>
 #include <waterbox_settings.h>
+#include <waterbox_slots.h>
 
 #include "rsdk-driver.h"
 
 FILE *__real_fopen(const char *path, const char *mode);
+int __real_fclose(FILE *f);
 
 /* the data pack, sealed after Init */
 static uint8_t *g_pack;
@@ -76,6 +78,19 @@ void rsdk_settings_read(struct rsdk_settings *s)
 	s->region = !strcmp(str, "us") ? 0 : !strcmp(str, "jp") ? 1 : !strcmp(str, "eu") ? 2 : -1;
 	s->plus = wbx_setting_bool("plus", 0);
 	s->random_seed = wbx_setting_long("randomSeed", 0);
+	s->dev_menu = wbx_setting_bool("devMenu", 0);
+	snprintf(str, sizeof str, "2");
+	wbx_setting_str("players", str, (int)sizeof str);
+	s->players = !strcmp(str, "4") ? 4 : 2;
+	/* the name goes into the engine's settings file as one line: what could
+	 * end the line or start a section is left out (chimera#302) */
+	char name[64] = "";
+	wbx_setting_str("username", name, (int)sizeof name);
+	int n = 0;
+	for (int i = 0; name[i] && n < (int)sizeof s->username - 1; i++)
+		if ((unsigned char)name[i] >= 0x20 && name[i] != 0x7f && name[i] != '[' && name[i] != ']' && name[i] != ';')
+			s->username[n++] = name[i];
+	s->username[n] = '\0';
 }
 
 /* the engine's settings file (UserCore.cpp LoadSettingsINI reads it): the
@@ -90,7 +105,7 @@ static void write_ini(const struct rsdk_settings *s)
 	int n = snprintf(g_ini, sizeof g_ini,
 		"[Game]\n"
 		"dataFile=Data.rsdk\n"
-		"devMenu=n\n"
+		"devMenu=%s\n"
 		"language=%d\n"
 		"region=%d\n"
 		"faceButtonFlip=n\n"
@@ -100,7 +115,7 @@ static void write_ini(const struct rsdk_settings *s)
 		"txtScripts=n\n"
 		"gameType=1\n"
 		"gameLogic=Game\n"
-		"username=\n"
+		"username=%s\n"
 		"[Video]\n"
 		"windowed=y\n"
 		"border=y\n"
@@ -120,7 +135,7 @@ static void write_ini(const struct rsdk_settings *s)
 		"streamsEnabled=y\n"
 		"streamVolume=1.0\n"
 		"sfxVolume=1.0\n",
-		s->language, s->region, s->screen_width, s->screen_width, s->screen_width);
+		s->dev_menu ? "y" : "n", s->language, s->region, s->username, s->screen_width, s->screen_width, s->screen_width);
 	g_ini_len = (size_t)n;
 }
 
@@ -171,11 +186,79 @@ static int read_pack(char *err, int errsize)
 	return 1;
 }
 
+/* The project's save data (the savedata slot, chimera#302): the files the
+ * game writes (SaveData.bin and the rest) as Export Save Data wrote them, put
+ * in place here at Init, before the seal, so they are part of the machine as
+ * it starts. Settings.ini is the project's settings, not save data. */
+static int seed_saves(char *err, int errsize)
+{
+	char name[256];
+	for (int i = 0; wbx_slot_name("savedata", i, name, (int)sizeof name); i++)
+	{
+		if (!strcasecmp(name, "Settings.ini") || strlen(name) >= sizeof g_files[0].name)
+		{
+			snprintf(err, (size_t)errsize, "the save data %s is not one this core takes: Settings.ini is the project's settings, and a name is at most %d characters",
+			         name, (int)sizeof g_files[0].name - 1);
+			return 0;
+		}
+		struct mem_file *mf = NULL;
+		for (int k = 0; k < MEMFILES && !mf; k++)
+			if (!g_files[k].name[0]) mf = &g_files[k];
+		if (!mf)
+		{
+			snprintf(err, (size_t)errsize, "the save data has more than %d files", MEMFILES);
+			return 0;
+		}
+		FILE *f = __real_fopen(name, "rb");
+		if (!f)
+		{
+			snprintf(err, (size_t)errsize, "the save data %s could not be opened", name);
+			return 0;
+		}
+		size_t cap = 0, n = 0;
+		char *data = NULL;
+		for (;;)
+		{
+			if (n == cap)
+			{
+				cap = cap ? cap * 2 : 65536;
+				data = (char *)realloc(data, cap);
+			}
+			const size_t got = fread(data + n, 1, cap - n, f);
+			n += got;
+			if (got == 0) break;
+		}
+		__real_fclose(f);
+		snprintf(mf->name, sizeof mf->name, "%s", name);
+		mf->data = data;
+		mf->size = n;
+	}
+	return 1;
+}
+
 int rsdk_files_load(const struct rsdk_settings *s, char *err, int errsize)
 {
 	write_ini(s);
-	return read_pack(err, errsize);
+	return read_pack(err, errsize) && seed_saves(err, errsize);
 }
+
+/* ------------------------------------------------------------ export */
+
+static int g_export[MEMFILES];
+static int g_export_count;
+
+int rsdk_saves_count(void)
+{
+	g_export_count = 0;
+	for (int i = 0; i < MEMFILES; i++)
+		if (g_files[i].name[0] && g_files[i].data && g_files[i].size && strcasecmp(g_files[i].name, "Settings.ini") &&
+		    strcasecmp(g_files[i].name, "log.txt"))
+			g_export[g_export_count++] = i;
+	return g_export_count;
+}
+const char *rsdk_saves_name(int index) { return index >= 0 && index < g_export_count ? g_files[g_export[index]].name : ""; }
+int64_t rsdk_saves_size(int index) { return index >= 0 && index < g_export_count ? (int64_t)g_files[g_export[index]].size : 0; }
+const uint8_t *rsdk_saves_data(int index) { return index >= 0 && index < g_export_count ? (const uint8_t *)g_files[g_export[index]].data : NULL; }
 
 /* ------------------------------------------------------------ fopen */
 
@@ -249,7 +332,6 @@ SDL_RWops *__wrap_SDL_RWFromFile(const char *file, const char *mode)
 }
 
 /* a file written and closed: its bytes become the file */
-int __real_fclose(FILE *f);
 int __wrap_fclose(FILE *f)
 {
 	for (int i = 0; i < MEMFILES; i++)

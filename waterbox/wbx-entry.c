@@ -17,7 +17,7 @@ static char g_load_error[1024];
 
 /* buttons set one at a time (SetButton) and the packed mask of FrameAdvance:
  * a step sees their union */
-static uint8_t g_set_buttons[RSDK_BTN_COUNT];
+static uint8_t g_set_buttons[RSDK_BTN_COUNT + 1];   /* four players' and Dev Menu */
 
 /* Turbo: the picture is not converted. Only the conversion - the engine draws
  * its screen whatever happens, because what it draws is part of the game. */
@@ -33,15 +33,31 @@ ECL_EXPORT int Init(void)
 
 ECL_EXPORT void SetButton(int32_t index, int32_t state)
 {
-	if (index >= 0 && index < RSDK_BTN_COUNT) g_set_buttons[index] = state ? 1 : 0;
+	if (index >= 0 && index <= RSDK_BTN_DEV_MENU) g_set_buttons[index] = state ? 1 : 0;
+}
+
+/* Players 3 and 4 are live only with the Players setting at 4, and Dev Menu
+ * only with the Developer Menu setting on, so a project without them carries
+ * players 1 and 2 and nothing else, as before (chimera#302) */
+ECL_EXPORT int IsButtonActive(int32_t index)
+{
+	return (index >= 0 && index < RSDK_BTN_PER_PLAYER * rsdkdrv_players()) || (index == RSDK_BTN_DEV_MENU && rsdkdrv_dev_menu());
 }
 
 ECL_EXPORT void FrameAdvance(uint64_t packed)
 {
-	for (int i = 0; i < RSDK_BTN_COUNT; i++)
+	for (int i = 0; i <= RSDK_BTN_DEV_MENU; i++)
 		rsdkdrv_set_button(i, g_set_buttons[i] | (int)((packed >> i) & 1));
 	rsdkdrv_frame(chimera_render_enabled);
 }
+
+/* Emulator > Export Save Data: the files the game wrote (SaveData.bin and the
+ * rest), those that hold anything; the Save data slot takes them back
+ * (chimera#302) */
+ECL_EXPORT int32_t GetSaveDataFileCount(void) { return rsdk_saves_count(); }
+ECL_EXPORT const char *GetSaveDataFileName(int32_t i) { return rsdk_saves_name(i); }
+ECL_EXPORT int64_t GetSaveDataFileSize(int32_t i) { return rsdk_saves_size(i); }
+ECL_EXPORT const uint8_t *GetSaveDataFileBuffer(int32_t i) { return rsdk_saves_data(i); }
 
 ECL_EXPORT void SetRenderingEnabled(int on) { chimera_render_enabled = on != 0; }
 

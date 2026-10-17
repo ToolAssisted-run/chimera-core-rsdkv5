@@ -34,7 +34,12 @@
 #                frame are the game's from then on
 #   settings     the random seed reaches the game; the Plus content setting,
 #                off by default, turns the Plus title on; screenWidth 320
-#                draws a 320-pixel picture
+#                draws a 320-pixel picture; the player name is drawn on the
+#                main menu
+#   save data    SaveData.bin exported, given back and read by the game;
+#                Settings.ini refused as save data
+#   developer menu  Dev Menu opens it with the setting on, does nothing off
+#   players      players 3 and 4 there with Players 4, not with 2
 #   teeth        the equivalence comparison sees a one-frame difference
 #
 # usage: run-gate.sh [-m <miniBox dir>] [-g <Data.rsdk>]
@@ -205,6 +210,102 @@ if [ -n "$game" ]; then
 		same settings "$work/narrow/w" "$work/narrow/n" "screenWidth 320 draws a 320x240 picture; native = sandbox"
 	else
 		fail "settings: screenWidth 320 drew $(size "$work/narrow/s.tga")"
+	fi
+
+	# Save data (chimera#302): the route plays in save slot 1, so the game
+	# writes SaveData.bin; Export Save Data gives it; a project given it back
+	# starts with it - the save select shows slot 1 in Green Hill, where a
+	# fresh game shows a new game - and Settings.ini is refused as save data
+	mkdir -p "$work/sd" "$work/sdin" "$work/sdin-out" "$work/sdx"
+	"$native" "$work/game" --frames $n $route --savedata-out "$work/sd" > "$work/sd.n" 2>/dev/null || true
+	cp "$game" "$work/sdin/Data.rsdk"
+	cp "$work/sd/SaveData.bin" "$work/sdin/" 2>/dev/null || true
+	printf '{"savedata":["SaveData.bin"]}' > "$work/sdin/slots"
+	"$native" "$work/sdin" --frames 1 --savedata-out "$work/sdin-out" > "$work/sdin1.n" 2>/dev/null || true
+	# Start on the title, A on the autosave notice, A on Mania Mode
+	sel="--press 1400:S:5 --press 1700:A:5 --press 2000:A:5"
+	# shellcheck disable=SC2086
+	"$native" "$work/game" --frames 2260 $sel > "$work/fresh.n" 2>/dev/null || true
+	# shellcheck disable=SC2086
+	"$native" "$work/sdin" --frames 2260 $sel > "$work/seeded.n" 2>/dev/null || true
+	# shellcheck disable=SC2086
+	"$wbx" "$core" "$work/sdin" --frames 2260 $sel > "$work/seeded.w" 2>/dev/null || true
+	cp "$game" "$work/sdx/Data.rsdk"
+	cp "$work/sd/SaveData.bin" "$work/sdx/Settings.ini" 2>/dev/null || true
+	printf '{"savedata":["Settings.ini"]}' > "$work/sdx/slots"
+	"$native" "$work/sdx" --frames 1 > "$work/sdx.n" 2>&1 || true
+	if [ ! -s "$work/sd/SaveData.bin" ]; then
+		fail "save data: the route wrote no SaveData.bin to export"
+	elif ! cmp -s "$work/sd/SaveData.bin" "$work/sdin-out/SaveData.bin"; then
+		fail "save data: a project given SaveData.bin does not start with those bytes"
+	elif [ "$(value "$work/fresh.n" videoHash)" = "$(value "$work/seeded.n" videoHash)" ]; then
+		fail "save data: the save select with the save given is the fresh game's: the game did not read it"
+	elif ! grep -q "Settings.ini is the project's settings" "$work/sdx.n"; then
+		fail "save data: Settings.ini given as save data was not refused ($(tail -1 "$work/sdx.n"))"
+	else
+		pass "save data: SaveData.bin ($(stat -c %s "$work/sd/SaveData.bin") bytes) exported, given back and read (the save select differs from a fresh game's), Settings.ini refused"
+		same "save data" "$work/seeded.w" "$work/seeded.n" "save data given: native = sandbox, 2260 frames"
+	fi
+
+	# The developer menu (chimera#302): with the Developer Menu setting on,
+	# Dev Menu (Escape) opens it; with the setting off the same press changes
+	# nothing, as the control is not there
+	for dm in on off; do
+		mkdir -p "$work/dm-$dm"
+		cp "$game" "$work/dm-$dm/Data.rsdk"
+		if [ "$dm" = on ]; then printf '{"devMenu": true}' > "$work/dm-$dm/settings"; fi
+		"$native" "$work/dm-$dm" --frames 1100 --press 1000:E:5 > "$work/dm-$dm.n" 2>/dev/null || true
+	done
+	"$wbx" "$core" "$work/dm-on" --frames 1100 --press 1000:E:5 > "$work/dm-on.w" 2>/dev/null || true
+	"$native" "$work/dm-off" --frames 1100 > "$work/dm-none.n" 2>/dev/null || true
+	if [ "$(value "$work/dm-on.n" videoHash)" = "$(value "$work/dm-off.n" videoHash)" ]; then
+		fail "developer menu: Dev Menu with the setting on made no difference to the picture"
+	elif [ "$(value "$work/dm-off.n" videoHash)" != "$(value "$work/dm-none.n" videoHash)" ]; then
+		fail "developer menu: with the setting off, Dev Menu still changed the game"
+	else
+		pass "developer menu: Dev Menu opens it with the setting on, and does nothing with the setting off"
+		same "developer menu" "$work/dm-on.w" "$work/dm-on.n" "developer menu: native = sandbox"
+	fi
+
+	# Players 3 and 4 (chimera#302): the menus answer every player, so with
+	# Players 4 player 3's Start on the title does what player 1's does; with
+	# Players 2, the default, player 3's buttons are not there and it does
+	# nothing
+	for pl in 2 4; do
+		mkdir -p "$work/pl$pl"
+		cp "$game" "$work/pl$pl/Data.rsdk"
+		printf '{"players": "%s"}' "$pl" > "$work/pl$pl/settings"
+		"$native" "$work/pl$pl" --frames 1650 --press 1400:P:5 > "$work/pl$pl-P.n" 2>/dev/null || true
+	done
+	"$native" "$work/pl4" --frames 1650 --press 1400:S:5 > "$work/pl4-S.n" 2>/dev/null || true
+	"$native" "$work/pl2" --frames 1650 > "$work/pl2-none.n" 2>/dev/null || true
+	"$wbx" "$core" "$work/pl4" --frames 1650 --press 1400:P:5 > "$work/pl4-P.w" 2>/dev/null || true
+	if [ "$(value "$work/pl4-P.n" tailVideoHash)" != "$(value "$work/pl4-S.n" tailVideoHash)" ]; then
+		fail "players: with Players 4, player 3's Start on the title did not do what player 1's does"
+	elif [ "$(value "$work/pl2-P.n" tailVideoHash)" != "$(value "$work/pl2-none.n" tailVideoHash)" ]; then
+		fail "players: with Players 2, player 3's Start still changed the game"
+	else
+		pass "players: with Players 4 player 3's Start leaves the title as player 1's does; with Players 2 it does nothing"
+		same players "$work/pl4-P.w" "$work/pl4-P.n" "player 3's Start: native = sandbox"
+	fi
+
+	# The player name (chimera#302): the main menu shows it at the bottom
+	# left, so the name CHIMERA draws another main menu than the game's own
+	# (Start on the title, A on the autosave notice)
+	mkdir -p "$work/name"
+	cp "$game" "$work/name/Data.rsdk"
+	printf '{"username": "CHIMERA"}' > "$work/name/settings"
+	menu="--press 1400:S:5 --press 1700:A:5"
+	# shellcheck disable=SC2086
+	"$native" "$work/name" --frames 1960 $menu > "$work/name.n" 2>/dev/null || true
+	# shellcheck disable=SC2086
+	"$wbx" "$core" "$work/name" --frames 1960 $menu > "$work/name.w" 2>/dev/null || true
+	# shellcheck disable=SC2086
+	"$native" "$work/game" --frames 1960 $menu > "$work/noname.n" 2>/dev/null || true
+	if [ -n "$(value "$work/name.n" tailVideoHash)" ] && [ "$(value "$work/name.n" tailVideoHash)" != "$(value "$work/noname.n" tailVideoHash)" ]; then
+		same settings "$work/name.w" "$work/name.n" "username CHIMERA draws another main menu than the default name; native = sandbox"
+	else
+		fail "settings: username CHIMERA draws the same main menu as the default name"
 	fi
 
 	# a jump at frame 4950, running in Green Hill

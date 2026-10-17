@@ -37,8 +37,13 @@ enum RsdkButton
 	RSDK_BTN_SELECT,
 	RSDK_BTN_PER_PLAYER
 };
-#define RSDK_PLAYERS 2
+/* players 1 and 2 always; 3 and 4 are live only with the Players setting
+ * at 4 (chimera#302), so a two-player project carries the first 24 */
+#define RSDK_PLAYERS 4
 #define RSDK_BTN_COUNT (RSDK_BTN_PER_PLAYER * RSDK_PLAYERS)
+/* the button after them: the PC keyboard's Escape, which opens the engine's
+ * developer menu when the Developer Menu setting is on (it is live only then) */
+#define RSDK_BTN_DEV_MENU RSDK_BTN_COUNT
 
 /* the picture: the engine's window, 240 lines and as wide as the
  * screenWidth setting (424 by default) */
@@ -55,6 +60,8 @@ enum RsdkButton
 /* 0 on failure, with the reason in err */
 int rsdkdrv_init(char *err, int errsize);
 void rsdkdrv_set_button(int index, int down);
+int rsdkdrv_dev_menu(void);   /* the Developer Menu setting */
+int rsdkdrv_players(void);    /* the Players setting: 2 or 4 */
 /* runs the engine through its next frame */
 void rsdkdrv_frame(int render);
 const uint32_t *rsdkdrv_video(int *w, int *h);
@@ -79,9 +86,21 @@ struct rsdk_settings
 	int region;          /* -1: the data's own */
 	int plus;            /* the Plus content: off by default (the licence) */
 	long random_seed;
+	int dev_menu;        /* devMenu */
+	int players;         /* 2 or 4: how many players' controls are live */
+	char username[32];   /* username, the name the game shows for the player */
 };
 void rsdk_settings_read(struct rsdk_settings *s);
 int rsdk_files_load(const struct rsdk_settings *s, char *err, int errsize);
+
+/* The files the game wrote (SaveData.bin and the rest; not Settings.ini, not
+ * the engine's log.txt) for
+ * Emulator > Export Save Data: a snapshot of those that hold anything, then
+ * each one's name and bytes. */
+int rsdk_saves_count(void);
+const char *rsdk_saves_name(int index);
+int64_t rsdk_saves_size(int index);
+const uint8_t *rsdk_saves_data(int index);
 
 #ifdef __cplusplus
 }

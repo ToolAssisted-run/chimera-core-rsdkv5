@@ -7,7 +7,8 @@
  *
  * Input is a movie: one line per step, the buttons held on that step as
  * characters (gate_key_index: U D L R the pad's directions, A B C its
- * buttons, S Start; anything else ignored); a line starting with # is a
+ * buttons, S Start, E Dev Menu, P player 3's Start, Q player 4's Start;
+ * anything else ignored); a line starting with # is a
  * comment. --movie-at puts its first
  * line at a given step; --press adds a key held for a stretch of steps.
  *
@@ -25,7 +26,7 @@
 
 #include "rsdk-driver.h"
 
-#define GATE_BTN_COUNT RSDK_BTN_COUNT
+#define GATE_BTN_COUNT (RSDK_BTN_DEV_MENU + 1)
 
 /* the native reference links the core's own fopen in place of the C
  * library's (rsdk-files.c, which writes nothing): the harness's files are
@@ -56,6 +57,11 @@ struct gate_core
 	void (*set_rendering)(int on);  /* optional (the turbo leg) */
 	uint64_t (*clock)(void);
 	const char *(*game_properties)(void);
+	/* optional (the save data legs): Emulator > Export Save Data's group */
+	int32_t (*savedata_count)(void);
+	const char *(*savedata_name)(int32_t i);
+	int64_t (*savedata_size)(int32_t i);
+	const uint8_t *(*savedata_buffer)(int32_t i);
 };
 
 #define GATE_MAX_PRESS 64
@@ -83,6 +89,7 @@ struct gate_opts
 	const char *dumpDomain;
 	const char *dumpPath;
 	const char *audioOut;
+	const char *savedataOut; /* a folder: the exported save files, at the end */
 	int turbo;
 	long turboSettle;
 };
@@ -109,6 +116,9 @@ static int gate_key_index(char c)
 	case 'B': return RSDK_BTN_B;
 	case 'C': return RSDK_BTN_C;
 	case 'S': return RSDK_BTN_START;
+	case 'E': return RSDK_BTN_DEV_MENU;
+	case 'P': return 2 * RSDK_BTN_PER_PLAYER + RSDK_BTN_START;
+	case 'Q': return 3 * RSDK_BTN_PER_PLAYER + RSDK_BTN_START;
 	default: return -1;
 	}
 }
@@ -387,6 +397,18 @@ static int gate_run(const struct gate_core *c, const struct gate_opts *o)
 	}
 	for (int i = 0; i < c->domain_count(); i++)
 		printf("domainSize[%s]=%lld\n", c->domain_name(i), (long long)c->domain_size(i));
+	if (o->savedataOut && c->savedata_count)
+	{
+		const int32_t n = c->savedata_count();
+		for (int32_t i = 0; i < n; i++)
+		{
+			char path[1024];
+			snprintf(path, sizeof path, "%s/%s", o->savedataOut, c->savedata_name(i));
+			FILE *sf = gate_fopen(path, "wb");
+			if (sf) { fwrite(c->savedata_buffer(i), 1, (size_t)c->savedata_size(i), sf); fclose(sf); }
+			printf("savedata[%s]=%lld\n", c->savedata_name(i), (long long)c->savedata_size(i));
+		}
+	}
 
 	if (o->dumpDomain && o->dumpPath)
 	{
@@ -448,6 +470,7 @@ static int gate_parse_opts(int argc, char **argv, int first, struct gate_opts *o
 		else if (!strcmp(argv[i], "--props-json") && i + 1 < argc) o->propsJson = argv[++i];
 		else if (!strcmp(argv[i], "--dump-domain") && i + 2 < argc) { o->dumpDomain = argv[++i]; o->dumpPath = argv[++i]; }
 		else if (!strcmp(argv[i], "--audio") && i + 1 < argc) o->audioOut = argv[++i];
+		else if (!strcmp(argv[i], "--savedata-out") && i + 1 < argc) o->savedataOut = argv[++i];
 		else if (!strcmp(argv[i], "--turbo")) o->turbo = 1;
 		else if (!strcmp(argv[i], "--turbo-settle") && i + 1 < argc) o->turboSettle = strtol(argv[++i], 0, 0);
 		else if (!strcmp(argv[i], "--rerecord") || !strcmp(argv[i], "--session")) ; /* run-wbx's */
