@@ -1,0 +1,4 @@
+{
+  "_comment": "This file lists the kinds of file a project of this core can hold, and it lists none. A Sonic Mania project supplies the game's data file as firmware (Data.rsdk, in waterbox.config). The New Project window therefore skips its files page.",
+  "slots": []
+}

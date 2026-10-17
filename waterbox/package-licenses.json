@@ -1,0 +1,76 @@
+{
+  "package": "rsdkv5",
+  "effectiveTerms": "The RSDKv5(U) Decompilation Source Code License v2.1 and the Sonic Mania Decompilation Source Code License v1 (both non-commercial; credit the authors; no game assets; the engine's with the downloadable content off by default) for the engine, the game's logic and the patches; MIT for the integration; the libraries' own licences",
+  "commercialUse": "no: both decompilations' licences forbid any use for profit",
+  "note": "The built core combines this repository's integration (MIT) with the RSDKv5 decompilation, a decompilation of Evening Star's Retro Engine v5 by Rubberduckycooly and chuliRMG, compiled in from the submodule extern/RSDKv5 with this repository's patches/ applied (a modified copy of its source, under its licence), with the iniparser (MIT), miniz (public domain) and stb_vorbis (MIT or public domain) it carries; the Sonic Mania decompilation (extern/SonicMania), the game's logic, compiled in unmodified; SDL 2 (zlib licence), whose software renderer, sound conversion and file reader the engine uses; and libogg and libtheora (BSD-3-Clause), which decode the game's videos. Both decompilations' licences allow copying, modifying and distributing for public or private use as long as nothing is used for profit, the decompilation and the original are credited and not claimed, no game asset is distributed, and the licence goes with every modified copy of the source; the engine's also asks that any build given to anyone has the downloadable content off by default, which RSDK_AUTOBUILD forces. The package carries none of Sonic Mania's data: the game's data file is the project's, supplied by the user.",
+  "components": [
+    {
+      "name": "chimera-core-rsdkv5 (integration)",
+      "license": "MIT",
+      "url": "https://github.com/ToolAssisted-run/chimera-core-rsdkv5",
+      "commit": "{selfCommit}",
+      "file": "LICENSE",
+      "sourceUrl": "https://github.com/ToolAssisted-run/chimera-core-rsdkv5/archive/{commit}.tar.gz"
+    },
+    {
+      "name": "RSDKv5 decompilation (Retro Engine v5)",
+      "license": "RSDKv5(U) Decompilation Source Code License v2.1 (non-commercial)",
+      "url": "https://github.com/RSDKModding/RSDKv5-Decompilation",
+      "commit": "{submodule:extern/RSDKv5}",
+      "file": "extern/RSDKv5/LICENSE.md",
+      "sourceUrl": "https://github.com/RSDKModding/RSDKv5-Decompilation/archive/{commit}.tar.gz"
+    },
+    {
+      "name": "Sonic Mania decompilation (the game's logic)",
+      "license": "Sonic Mania Decompilation Source Code License v1 (non-commercial)",
+      "url": "https://github.com/RSDKModding/Sonic-Mania-Decompilation",
+      "commit": "{submodule:extern/SonicMania}",
+      "file": "extern/SonicMania/LICENSE.md",
+      "sourceUrl": "https://github.com/RSDKModding/Sonic-Mania-Decompilation/archive/{commit}.tar.gz"
+    },
+    {
+      "name": "stb_vorbis (in the engine, dependencies/all/stb_vorbis)",
+      "license": "MIT OR Unlicense",
+      "url": "https://github.com/nothings/stb",
+      "commit": "{submodule:extern/RSDKv5/dependencies/all/stb_vorbis}",
+      "file": "extern/RSDKv5/dependencies/all/stb_vorbis/LICENSE",
+      "sourceUrl": "https://github.com/nothings/stb/archive/{commit}.tar.gz"
+    },
+    {
+      "name": "iniparser (in the engine, dependencies/all/iniparser)",
+      "license": "MIT",
+      "url": "https://github.com/ndevilla/iniparser",
+      "file": "extern/RSDKv5/dependencies/all/iniparser/LICENSE"
+    },
+    {
+      "name": "miniz (in the engine, dependencies/all/miniz)",
+      "license": "Unlicense (public domain)",
+      "url": "https://github.com/richgel999/miniz",
+      "file": "extern/RSDKv5/dependencies/all/miniz/miniz.h"
+    },
+    {
+      "name": "SDL 2",
+      "license": "Zlib",
+      "url": "https://github.com/libsdl-org/SDL",
+      "commit": "{submodule:extern/SDL}",
+      "file": "extern/SDL/LICENSE.txt",
+      "sourceUrl": "https://github.com/libsdl-org/SDL/archive/{commit}.tar.gz"
+    },
+    {
+      "name": "libogg",
+      "license": "BSD-3-Clause",
+      "url": "https://github.com/xiph/ogg",
+      "commit": "{submodule:extern/ogg}",
+      "file": "extern/ogg/COPYING",
+      "sourceUrl": "https://github.com/xiph/ogg/archive/{commit}.tar.gz"
+    },
+    {
+      "name": "libtheora",
+      "license": "BSD-3-Clause",
+      "url": "https://github.com/xiph/theora",
+      "commit": "{submodule:extern/theora}",
+      "file": "extern/theora/COPYING",
+      "sourceUrl": "https://github.com/xiph/theora/archive/{commit}.tar.gz"
+    }
+  ]
+}

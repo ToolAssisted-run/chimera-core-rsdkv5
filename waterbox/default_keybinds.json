@@ -1,0 +1,34 @@
+{
+  "_comment": [
+    "Default bindings for Sonic Mania's two pads. Player 1 on the keyboard as the decompilation's own Settings.ini has it - the arrows,",
+    "A, S and D for A, B and C, Q, W and E for X, Y and Z, Enter for Start, Tab for Select - and on the first pad; player 2 on the second pad."
+  ],
+  "AllTrollers": {
+    "Sonic Mania": {
+      "P1 Up": "Up, J1 POV1U, X1 DpadUp, X1 LStickUp",
+      "P1 Down": "Down, J1 POV1D, X1 DpadDown, X1 LStickDown",
+      "P1 Left": "Left, J1 POV1L, X1 DpadLeft, X1 LStickLeft",
+      "P1 Right": "Right, J1 POV1R, X1 DpadRight, X1 LStickRight",
+      "P1 A": "A, J1 B1, X1 A",
+      "P1 B": "S, J1 B2, X1 B",
+      "P1 C": "D, J1 B3, X1 X",
+      "P1 X": "Q, J1 B4, X1 Y",
+      "P1 Y": "W",
+      "P1 Z": "E",
+      "P1 Start": "Enter, J1 B10, X1 Start",
+      "P1 Select": "Tab, J1 B9, X1 Back",
+      "P2 Up": "J2 POV1U, X2 DpadUp, X2 LStickUp",
+      "P2 Down": "J2 POV1D, X2 DpadDown, X2 LStickDown",
+      "P2 Left": "J2 POV1L, X2 DpadLeft, X2 LStickLeft",
+      "P2 Right": "J2 POV1R, X2 DpadRight, X2 LStickRight",
+      "P2 A": "J2 B1, X2 A",
+      "P2 B": "J2 B2, X2 B",
+      "P2 C": "J2 B3, X2 X",
+      "P2 X": "J2 B4, X2 Y",
+      "P2 Y": "",
+      "P2 Z": "",
+      "P2 Start": "J2 B10, X2 Start",
+      "P2 Select": "J2 B9, X2 Back"
+    }
+  }
+}
