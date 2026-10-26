@@ -112,13 +112,15 @@ python3 "$here/make-project.py" "$pkg" "$work/test.chimeraProject" "$frames" --d
 if [ ! -x "$crun" ]; then
 	report "engine" SKIP "no chimera-run at $crun"
 else
-	: > "$work/empty.rom"
-	( cd "$work" && "$crun" "$pkg" empty.rom test.log --settings "$settings" --firmware "Data.rsdk=$data" \
+	# a game runs only in a project (Chimera, 2026-10-26): the movie made into
+	# one by chimera-run, with no game file, the data file its firmware
+	( cd "$work" && "$crun" --new-project "$work/movie.chimeraProject" "$pkg" --movie test.log --settings "$settings" --firmware "Data.rsdk=$data" \
+		> "$work/movie.make.log" 2>&1 && "$crun" --project "$work/movie.chimeraProject" "$pkg" --firmware "Data.rsdk=$data" \
 		--dump "Game State=$work/run.gs.bin" --dump "Players=$work/run.gv.bin" \
 		--screenshot "$((frames - 1))=$work/run.last.tga" --meta "$work/run.meta" > "$work/run.log" 2>&1 )
 	if grep -q '^status=OK' "$work/run.meta" 2>/dev/null && same "$work/run.gs.bin" "$work/run.gv.bin" &&
 	   python3 "$here/compare-pictures.py" "$work/native.last.tga" "$work/run.last.tga" > "$work/run.pic" 2>&1; then
-		report "engine:movie" PASS "$frames frames from a movie file: Game State, Players and the last picture are the reference's"
+		report "engine:movie" PASS "$frames frames from a movie made into a project: Game State, Players and the last picture are the reference's"
 	else
 		report "engine:movie" FAIL "$(grep -m1 detail= "$work/run.meta" 2>/dev/null) $(cat "$work/run.pic" 2>/dev/null) (build/frontend/run.log)"
 	fi
