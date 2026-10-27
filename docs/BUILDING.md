@@ -12,8 +12,8 @@ meson setup "$mb/build/meson-linux" "$mb" && meson compile -C "$mb/build/meson-l
 meson setup "$mb/build/meson-cpp" "$mb" -Dguest_cpp=true && meson compile -C "$mb/build/meson-cpp"
 ```
 
-For the frontend tests, Chimera itself built (its README, "Building"), mono
-and Xvfb.
+For the frontend tests, Chimera built with its window (its README, "Building";
+`tools/ci-chimera.sh` does it). The window runs headless and needs no display.
 
 ## Sources
 
@@ -54,9 +54,7 @@ The scripts find miniBox from `-m`, else `MINIBOX_DIR`, else
 Then Chimera's contract tests against the package:
 
 ```
-CHIMERA_CORES_DIR=<folder with the package> dotnet test \
-  <chimera>/source/gui/Chimera.Tests.Client.Common/Chimera.Tests.Client.Common.csproj \
-  -c Release --filter "FullyQualifiedName~InstalledCorePackagesTests|FullyQualifiedName~MnemonicUniquenessTests"
+CHIMERA_CORES_DIR=<folder with the package> <chimera>/build/meson-linux/source/ui/test-packages
 ```
 
 The game's logic is compiled into the core, so there is no test game:
