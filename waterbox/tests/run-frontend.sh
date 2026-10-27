@@ -8,7 +8,7 @@
 # - chimera-run (the engine, no frontend): the route from a movie file
 #   and from a hand-written project. The Game State and Players
 #   domains and the last picture must be the native reference's.
-# - Chimera itself, headless under Mono on a private Xvfb: the same project
+# - Chimera's window, run headless (it needs no display): the same project
 #   opened and played through Lua, its domains compared with the native
 #   reference; the game's timer in the saved project's headers; the property
 #   library (game.list/get/set) tried against the same bytes; the core's own
@@ -45,7 +45,7 @@ fi
 chimera_root="$(cd "$chimera_root" && pwd)"
 [ -n "$mb" ] || mb="$chimera_root/extern/chimera-common-minibox"
 
-emu_exe="$chimera_root/build/Chimera.exe"
+chimera_exe="$chimera_root/build/meson-linux/source/ui/chimera"
 crun="$chimera_root/build/dll/chimera-run"
 rn="$root/build/native/run-native"
 
@@ -135,44 +135,25 @@ else
 fi
 
 # ---------------------------------------------------------------- Chimera itself
-if [ ! -f "$emu_exe" ]; then
-	report "frontend" SKIP "Chimera not built: $emu_exe"
+if [ ! -x "$chimera_exe" ]; then
+	report "frontend" SKIP "Chimera not built: $chimera_exe"
 	echo; echo "$ok ok, $failed failed, $skipped skipped"; [ "$failed" -eq 0 ]; exit
 fi
-export LD_LIBRARY_PATH="$chimera_root/build/dll:$chimera_root/build:/usr/lib/x86_64-linux-gnu"
-export MONO_CRASH_NOFILE=1 MONO_WINFORMS_XIM_STYLE=disabled ALSOFT_DRIVERS=null
-export CHIMERA_DATA_HOME="$work/data" MINIBOX_LOG="$work/minibox.log"
-xvfb_pid=""
-cleanup() { [ -n "$xvfb_pid" ] && kill "$xvfb_pid" 2>/dev/null; }
-trap cleanup EXIT
-if [ -z "${DISPLAY:-}" ]; then
-	command -v Xvfb > /dev/null || { report "frontend" SKIP "no Xvfb"; echo; echo "$ok ok, $failed failed, $skipped skipped"; exit 0; }
-	for n in 90 91 92 93 94 95 96 97 98 99; do
-		if [ ! -e "/tmp/.X11-unix/X$n" ]; then
-			Xvfb ":$n" -screen 0 640x480x24 -nolisten tcp > "$work/xvfb.log" 2>&1 & xvfb_pid=$!
-			export DISPLAY=":$n"; break
-		fi
-	done
-	sleep 1
-fi
+# Chimera's window, run headless: the cores installed in the checkout, its
+# settings, cache and recovery files the run's own, and nothing carried over
+# from a Chimera installed on this machine
+export ALSOFT_DRIVERS=null CHIMERA_CORES_DIR="$chimera_root/build/Cores" CHIMERA_QT_CACHE="$work/qt-cache" CHIMERA_QT_RECOVERY="$work/qt-recovery" \
+	CHIMERA_QT_HASHES="$work/qt-file-hashes.txt" CHIMERA_QT_CHIMERA_SETTINGS="$work/no-chimera-config.ini"
+export MINIBOX_LOG="$work/minibox.log"
 
-# a config of its own, with the Base path (and so every folder Chimera
+# settings of its own, with the Base path (and so every folder Chimera
 # writes by default) in the work dir
-config="$work/config.ini"
-echo 'client.exit()' > "$work/exit.lua"
-( cd "$work" && timeout 120 mono "$emu_exe" --headless "--config=$config" "--lua=$work/exit.lua" ) > "$work/bootstrap.log" 2>&1
+config="$work/settings.json"
 python3 - "$config" "$work" <<'EOF'
 import json, sys
-path, base = sys.argv[1], sys.argv[2]
-c = json.load(open(path))
-for e in c["PathEntries"]["Paths"]:
-    if e["Type"] == "Base" and e["System"] == "Global_NULL":
-        e["Path"] = base
-json.dump(c, open(path, "w"), indent=2)
+json.dump({"paths.base": sys.argv[2]}, open(sys.argv[1], "w"), indent=2)
 EOF
-# what the home check counts from: the first start above makes an empty
-# Movies folder under the Base path it starts with (the checkout's build/),
-# before there is a config to point it elsewhere
+# what the home check counts from
 touch "$work/configured"
 
 gui() {
@@ -180,7 +161,7 @@ gui() {
 	local tag="$1" cfg="$2" project="$3" nframes="$4"
 	mkdir -p "$work/$tag"
 	printf 'frames=%s\nout=%s\nmeta=%s\nsave=%s\n' "$nframes" "$work/$tag" "$work/$tag/meta.txt" "${GUI_SAVE:-0}" > "$work/$tag/job.txt"
-	( cd "$work" && MINIHAWK_JOB="$work/$tag/job.txt" timeout 300 mono "$emu_exe" --headless "--config=$cfg" \
+	( cd "$work" && MINIHAWK_JOB="$work/$tag/job.txt" timeout 300 "$chimera_exe" --headless "--config=$cfg" \
 		"--core=$pkg" "--firmware=Data.rsdk=$data" "--project=$project" "--lua=$here/frontend.lua" ) > "$work/$tag.log" 2>&1
 	echo $?
 }
@@ -242,10 +223,13 @@ else
 	report "gui:refusal" FAIL "exit $code; $(grep -m1 -i 'screenwidth\|error' "$work/refuse.log" | cut -c1-100)"
 fi
 
-# the bindings the package ships become the frontend's defaults
-python3 "$here/forget-controller.py" "$config" "$work/config.keys.ini" "Sonic Mania"
-gui keys "$work/config.keys.ini" "$work/gui.chimeraProject" 1 > /dev/null
-if [ "$(meta keys status)" = "OK" ] && python3 "$here/check-keybinds.py" "$work/config.keys.ini" "$wb/default_keybinds.json" "Sonic Mania" > "$work/keys.txt" 2>&1; then
+# the bindings the package ships are the machine's when nobody changed them
+# (the window keeps only the keys a person changed; fresh settings have none)
+printf 'out=%s/keys.controls.json\nmeta=%s/keys.meta.txt\n' "$work" "$work" > "$work/job.keys.txt"
+rm -f "$work/keys.controls.json" "$work/keys.meta.txt"
+( cd "$work" && MINIHAWK_JOB="$work/job.keys.txt" timeout 300 "$chimera_exe" --headless "--config=$work/settings.keys.json" \
+	"--core=$pkg" "--firmware=Data.rsdk=$data" "--project=$work/gui.chimeraProject" "--lua=$here/dump-controls.lua" ) > "$work/keys.log" 2>&1
+if grep -q "^status=OK" "$work/keys.meta.txt" 2>/dev/null && python3 "$here/check-keybinds.py" "$work/keys.controls.json" "$wb/default_keybinds.json" "Sonic Mania" > "$work/keys.txt" 2>&1; then
 	report "gui:keybinds" PASS "$(cat "$work/keys.txt")"
 else
 	report "gui:keybinds" FAIL "$(head -1 "$work/keys.txt" 2>/dev/null) (build/frontend/keys.log)"
