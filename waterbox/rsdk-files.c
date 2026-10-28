@@ -36,6 +36,11 @@
 
 #include "rsdk-driver.h"
 
+/* A text a person reads is a key of languages/en.json, each of its
+ * arguments after a TEXT_ARG (chimera docs/translations.md). TEXT_ARG is a
+ * string of its own so the byte after it is never read as more of its hex. */
+#define TEXT_ARG "\x1f"
+
 FILE *__real_fopen(const char *path, const char *mode);
 int __real_fclose(FILE *f);
 
@@ -149,7 +154,7 @@ static int read_pack(char *err, int errsize)
 	FILE *f = __real_fopen(name, "rb");
 	if (!f)
 	{
-		snprintf(err, (size_t)errsize, "the game's data file (Data.rsdk) is not there");
+		snprintf(err, (size_t)errsize, "error.game_s_data_file_data_rsdk");
 		return 0;
 	}
 	fseek(f, 0, SEEK_END);
@@ -158,28 +163,28 @@ static int read_pack(char *err, int errsize)
 	if (size <= 6)
 	{
 		fclose(f);
-		snprintf(err, (size_t)errsize, "%s is not a Retro Engine data file: it is %ld bytes long", name, size);
+		snprintf(err, (size_t)errsize, "error.is_not_a_retro_engine_data" TEXT_ARG "%s" TEXT_ARG "%ld", name, size);
 		return 0;
 	}
 	g_pack = (uint8_t *)alloc_sealed((size_t)size);
 	if (!g_pack)
 	{
 		fclose(f);
-		snprintf(err, (size_t)errsize, "%s is too large (%ld bytes) for the core's memory", name, size);
+		snprintf(err, (size_t)errsize, "error.is_too_large_bytes_for_the" TEXT_ARG "%s" TEXT_ARG "%ld", name, size);
 		return 0;
 	}
 	const size_t got = fread(g_pack, 1, (size_t)size, f);
 	fclose(f);
 	if (got != (size_t)size)
 	{
-		snprintf(err, (size_t)errsize, "%s could not be read whole", name);
+		snprintf(err, (size_t)errsize, "error.could_not_be_read_whole" TEXT_ARG "%s", name);
 		return 0;
 	}
 	/* the engine takes a file that is not a pack for no data at all and
 	 * starts its developer menu: the core refuses it instead */
 	if (memcmp(g_pack, "RSDKv5", 6) != 0)
 	{
-		snprintf(err, (size_t)errsize, "%s is not a Retro Engine v5 data file (it does not start with RSDKv5)", name);
+		snprintf(err, (size_t)errsize, "error.is_not_a_retro_engine_v5" TEXT_ARG "%s", name);
 		return 0;
 	}
 	g_pack_size = (size_t)size;
@@ -197,7 +202,7 @@ static int seed_saves(char *err, int errsize)
 	{
 		if (!strcasecmp(name, "Settings.ini") || strlen(name) >= sizeof g_files[0].name)
 		{
-			snprintf(err, (size_t)errsize, "the save data %s is not one this core takes: Settings.ini is the project's settings, and a name is at most %d characters",
+			snprintf(err, (size_t)errsize, "error.save_data_is_not_one_this" TEXT_ARG "%s" TEXT_ARG "%d",
 			         name, (int)sizeof g_files[0].name - 1);
 			return 0;
 		}
@@ -206,13 +211,13 @@ static int seed_saves(char *err, int errsize)
 			if (!g_files[k].name[0]) mf = &g_files[k];
 		if (!mf)
 		{
-			snprintf(err, (size_t)errsize, "the save data has more than %d files", MEMFILES);
+			snprintf(err, (size_t)errsize, "error.save_data_has_more_than" TEXT_ARG "%d", MEMFILES);
 			return 0;
 		}
 		FILE *f = __real_fopen(name, "rb");
 		if (!f)
 		{
-			snprintf(err, (size_t)errsize, "the save data %s could not be opened", name);
+			snprintf(err, (size_t)errsize, "error.save_data_could_not_be" TEXT_ARG "%s", name);
 			return 0;
 		}
 		size_t cap = 0, n = 0;

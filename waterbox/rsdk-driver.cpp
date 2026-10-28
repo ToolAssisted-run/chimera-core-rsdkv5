@@ -37,6 +37,11 @@
 
 #include "rsdk-driver.h"
 
+/* A text a person reads is a key of languages/en.json, each of its
+ * arguments after a TEXT_ARG (chimera docs/translations.md). TEXT_ARG is a
+ * string of its own so the byte after it is never read as more of its hex. */
+#define TEXT_ARG "\x1f"
+
 using namespace RSDK;
 
 namespace {
@@ -111,7 +116,7 @@ int rsdkdrv_init(char *err, int errsize)
 	rsdk_settings_read(&g.settings);
 	if (g.settings.screen_width < 320 || g.settings.screen_width > 424)
 	{
-		snprintf(err, (size_t)errsize, "the setting screenWidth is %d; it goes from 320 to 424", g.settings.screen_width);
+		snprintf(err, (size_t)errsize, "error.setting_screenwidth_is_it" TEXT_ARG "%d", g.settings.screen_width);
 		return 0;
 	}
 	g.video_w = g.settings.screen_width;
@@ -131,12 +136,12 @@ int rsdkdrv_init(char *err, int errsize)
 	InitRetroEngine(1, argv);
 	if (!RenderDevice::isRunning || !engine.initialized)
 	{
-		snprintf(err, (size_t)errsize, "the engine did not start: the data file is not Sonic Mania's, or not a Retro Engine v5 data file");
+		snprintf(err, (size_t)errsize, "error.engine_did_not_start_the");
 		return 0;
 	}
 	if (!g.audio_cb)
 	{
-		snprintf(err, (size_t)errsize, "the engine did not open its sound device");
+		snprintf(err, (size_t)errsize, "error.engine_did_not_open_its");
 		return 0;
 	}
 	g.init_done = 1;

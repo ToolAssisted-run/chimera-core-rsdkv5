@@ -3,13 +3,13 @@
   "slots": [
     {
       "id": "savedata",
-      "title": "Save data",
+      "title": "slot.savedata",
       "min": 0,
       "max": 32,
       "formats": [
         "bin"
       ],
-      "help": "The files the game wrote, as Emulator > Export Save Data gave them: SaveData.bin (the save files' progress) and any other the game keeps, under their own names. They are put in place before the game starts, so the game finds them as its own."
+      "help": "slot.savedata.help"
     }
   ]
 }

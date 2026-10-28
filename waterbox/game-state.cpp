@@ -221,14 +221,14 @@ const char *rsdkdrv_game_properties(void)
 	   "\"8\": \"Developer Menu\", \"9\": \"Video\", \"10\": \"Image\" }");
 	GS("Scene.Category", 9, "u8", ", \"group\": \"Scene\"");
 	GS("Scene.List Position", 10, "u16", ", \"group\": \"Scene\"");
-	GS("Scene.Time Ms", 12, "u32", ", \"group\": \"Scene\", \"description\": \"The scene timer (minutes, seconds and hundredths), in milliseconds\"");
+	GS("Scene.Time Ms", 12, "u32", ", \"group\": \"Scene\", \"description\": \"property.scene_time_ms\"");
 	GS("Scene.Time Counter", 16, "s32", ", \"group\": \"Scene\"");
 	GS("Scene.Time Enabled", 20, "bool", ", \"group\": \"Scene\"");
 	GS("Engine.Screens", 21, "u8", ", \"group\": \"Engine\"");
 	const struct mania_layout *ml = mania_layout();
 	{
 		char vals[256];
-		int k = snprintf(vals, sizeof vals, ", \"group\": \"Game\", \"description\": \"The game's mode (0 before the game has started)\", \"values\": { \"%d\": \"Mania\"", ml->mode_mania);
+		int k = snprintf(vals, sizeof vals, ", \"group\": \"Game\", \"description\": \"property.game_mode\", \"values\": { \"%d\": \"Mania\"", ml->mode_mania);
 		if (ml->mode_encore >= 0) k += snprintf(vals + k, sizeof vals - (size_t)k, ", \"%d\": \"Encore\"", ml->mode_encore);
 		snprintf(vals + k, sizeof vals - (size_t)k, ", \"%d\": \"Time Attack\", \"%d\": \"Competition\" }", ml->mode_time_attack, ml->mode_competition);
 		GS("Game.Mode", 24, "s32", vals);
@@ -238,26 +238,26 @@ const char *rsdkdrv_game_properties(void)
 	P("    { \"name\": \"Scene.Folder\", \"domain\": \"Game State\", \"offset\": 64, \"type\": \"string\", \"length\": 16, \"writable\": false, \"group\": \"Scene\" },\n");
 	P("    { \"name\": \"Scene.ID\", \"domain\": \"Game State\", \"offset\": 80, \"type\": \"string\", \"length\": 8, \"writable\": false, \"group\": \"Scene\" },\n");
 	static const struct { const char *name; int off; const char *type; int writable; const char *desc; } k_player[] = {
-		{ "X", 0, "s32", 1, "Position, 16.16 fixed point" },
-		{ "Y", 4, "s32", 1, "Position, 16.16 fixed point" },
+		{ "X", 0, "s32", 1, "property.player.x" },
+		{ "Y", 4, "s32", 1, "property.player.x" },
 		{ "X Velocity", 8, "s32", 1, "" },
 		{ "Y Velocity", 12, "s32", 1, "" },
 		{ "Ground Velocity", 16, "s32", 1, "" },
 		{ "Angle", 20, "s32", 1, "" },
 		{ "Rotation", 24, "s32", 1, "" },
-		{ "Class", 28, "u16", 0, "The object's class (a number the scene gives it)" },
+		{ "Class", 28, "u16", 0, "property.player.class" },
 		{ "On Ground", 30, "bool", 0, "" },
 		{ "Direction", 31, "u8", 1, "" },
 		{ "Collision Mode", 32, "u8", 0, "" },
 		{ "Collision Plane", 33, "u8", 0, "" },
 		{ "Visible", 34, "u8", 0, "" },
 		{ "Active", 35, "u8", 0, "" },
-		{ "Rings", 40, "s32", 1, "Sonic Mania's ring count" },
+		{ "Rings", 40, "s32", 1, "property.player.rings" },
 		{ "Lives", 44, "s32", 1, "" },
 		{ "Score", 48, "s32", 1, "" },
-		{ "Invincible Timer", 56, "s32", 0, "Frames of invincibility left" },
-		{ "Speed Shoes Timer", 60, "s32", 0, "Frames of speed shoes left" },
-		{ "Is Player", 68, "bool", 0, "The object is one of Sonic Mania's players (the fields above Character are zero when not)" },
+		{ "Invincible Timer", 56, "s32", 0, "property.player.invincible_timer" },
+		{ "Speed Shoes Timer", 60, "s32", 0, "property.player.speed_shoes_timer" },
+		{ "Is Player", 68, "bool", 0, "property.player.is_player" },
 	};
 	for (int p = 0; p < 2; p++)
 		for (size_t i = 0; i < sizeof k_player / sizeof k_player[0]; i++)

@@ -104,9 +104,9 @@ mkdir -p "$work/none" "$work/junk" "$work/wide"
 head -c 100000 /dev/zero > "$work/junk/Data.rsdk"
 head -c 100000 /dev/zero > "$work/wide/Data.rsdk"
 printf '{"screenWidth": 640}' > "$work/wide/settings"
-refuse none "Data.rsdk) is not there" "no data file"
-refuse junk "is not a Retro Engine v5 data file" "a file of zeros"
-refuse wide "goes from 320 to 424" "screenWidth 640"
+refuse none "error.game_s_data_file_data_rsdk" "no data file"
+refuse junk "error.\\(is_not_a_retro_engine_v5\\|engine_did_not_start_the\\)" "a file of zeros"
+refuse wide "error.setting_screenwidth_is_it" "screenWidth 640"
 
 echo "== clock"
 if nm "$core" | grep -qE ' (T|W|t) (time|__real_time)$'; then
@@ -240,7 +240,7 @@ if [ -n "$game" ]; then
 		fail "save data: a project given SaveData.bin does not start with those bytes"
 	elif [ "$(value "$work/fresh.n" videoHash)" = "$(value "$work/seeded.n" videoHash)" ]; then
 		fail "save data: the save select with the save given is the fresh game's: the game did not read it"
-	elif ! grep -q "Settings.ini is the project's settings" "$work/sdx.n"; then
+	elif ! grep -q "error.save_data_is_not_one_this" "$work/sdx.n"; then
 		fail "save data: Settings.ini given as save data was not refused ($(tail -1 "$work/sdx.n"))"
 	else
 		pass "save data: SaveData.bin ($(stat -c %s "$work/sd/SaveData.bin") bytes) exported, given back and read (the save select differs from a fresh game's), Settings.ini refused"
