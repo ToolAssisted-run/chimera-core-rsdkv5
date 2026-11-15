@@ -315,6 +315,14 @@ this build; a mod larger than a few hundred bytes; Windows, macOS and
 aarch64. The no-mods digests were measured on x86_64; that test is skipped
 on aarch64.
 
+The owner's answers on what was built (owner, 2026-11-15): inside a zip,
+the zip's own modconfig.ini decides the order and which mods are on, so a
+mod pack loads as its author set it up; the developer menu's Mods page
+stays, since a movie records its presses; the mod loader's own files stay
+out of Export Save Data, which gives only the game's saves. The owner
+also chose to publish this before it has been tried with Sonic Mania's
+data, and to say so.
+
 ## Not done
 
 - Other releases' data (Steam, consoles, Sonic Origins Plus): not tried.
