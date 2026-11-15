@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1 はRetro Engineのデータファイルではありません。ファイルの大きさは %2 バイトです。",
 		"error.is_not_a_retro_engine_v5": "%1 はRetro Engine v5のデータファイルではありません(RSDKv5で始まっていません)",
 		"error.is_too_large_bytes_for_the": "%1 は大きすぎます(%2 バイト)。コアのメモリに入りません。",
+		"error.mod_needs_native_code": "Mod %1(%2 内)は独自のコンパイル済みコード(%3)を必要としますが、コアのサンドボックス内では実行できません。使えるのはデータファイルだけの Mod です。",
+		"error.mod_wrong_engine": "Mod %1(%2 内)は Retro Engine のバージョン %3 用で、Sonic Mania を動かすバージョン 5 用ではありません。",
+		"error.mods_could_not_be_read": "%1 を最後まで読み込めませんでした。zip が壊れています。",
+		"error.mods_no_mod_ini": "%1 には Mod が入っていません。mod.ini を持つフォルダーがありません。",
+		"error.mods_not_zip": "%1 は zip ではありません。Mod は、それぞれ mod.ini を持つ Mod フォルダーの zip として指定します。",
+		"error.mods_same_folder": "%1 という名前の Mod が 2 つあります(2 つ目は %2 内)。Mod ごとに別のフォルダー名が必要です。",
+		"error.mods_too_large": "Mod を展開すると %1 MiB になり、コアのメモリーに収まりません。",
 		"error.save_data_could_not_be": "セーブデータ %1 を開けませんでした。",
 		"error.save_data_has_more_than": "セーブデータのファイルが %1 個を超えています。",
 		"error.save_data_is_not_one_this": "セーブデータ %1 は、このコアでは使えません。Settings.ini はプロジェクトの設定で、名前は最大 %2 文字です。",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "画面の横幅をドット数で指定します(エンジンのpixWidth設定)。424は本家の既定値で、16:9の画面です。320は4:3の画面です。幅を変えると、プレイヤーの先の見通しや、動いているオブジェクトの範囲が変わるので、ゲームの内容が変わります。ムービーにはこの値が記録されます。",
 		"setting.username": "プレイヤー名",
 		"setting.username.about": "ゲームに表示されるプレイヤーの名前です(エンジンの設定ファイルのusername)。空欄の場合はゲームの既定の名前になります。改行、かっこ、セミコロンは取り除かれます。最大31文字です。",
+		"slot.mods": "Mod",
+		"slot.mods.help": "デコンパイル版の Mod ローダー用の Mod です。zip をいくつでも指定でき、各 zip には mod.ini を持つ Mod フォルダーが 1 つ以上入っています(ルートに mod.ini がある zip は、その zip の名前の 1 つの Mod になります)。ゲームの開始時にこのリストの順に読み込まれ、マシンの一部になります。Mod を使って作ったムービーを再生するには同じ Mod が必要です。2 つの Mod に同じファイルがある場合は、リストの上にある方が使われます。データファイルだけの Mod は動作します。独自のコンパイル済みコードを持つ Mod(mod.ini の LogicFile)はコアのサンドボックス内で実行できないため、拒否されます。Mod が書き込んだものはマシンの中に留まります。何もダウンロードされません。使わない場合は空のままにしてください。",
 		"slot.savedata": "セーブデータ",
 		"slot.savedata.help": "エミュレーター > セーブデータの書き出し で書き出されたゲームのファイルです。SaveData.bin(セーブファイルの進行状況)と、ゲームが別に保存する他のファイル。その名前のまま使います。ゲームの開始前に所定の場所に置かれるので、ゲームは自分のファイルとして読み込みます。"
 	}

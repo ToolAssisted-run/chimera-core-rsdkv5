@@ -1,0 +1,79 @@
+diff --git a/RSDKv5/RSDK/Core/ModAPI.cpp b/RSDKv5/RSDK/Core/ModAPI.cpp
+index e09a301..f9b3ee0 100644
+--- a/RSDKv5/RSDK/Core/ModAPI.cpp
++++ b/RSDKv5/RSDK/Core/ModAPI.cpp
+@@ -12,7 +12,17 @@ using namespace RSDK;
+ #include <stdexcept>
+ #include <functional>
+ 
+-#if RETRO_PLATFORM != RETRO_ANDROID
++#if defined(RSDK_CHIMERA_MOD_FS)
++// Chimera: the mods folder is in the machine's memory, not on a disk; the
++// core answers what std::filesystem would (its mod-fs.hpp), as the Android
++// build answers it below
++#include "mod-fs.hpp"
++// and no loading screen: a machine stepped a frame at a time shows nothing
++// while it starts, and what the mod loader drew here (its progress, "Mod
++// loading done!") stayed in the screen, drawn into the game's first frames
++#define DrawRectangle(...) ((void)0)
++#define DrawDevString(...) ((void)0)
++#elif RETRO_PLATFORM != RETRO_ANDROID
+ namespace fs = std::filesystem;
+ #else
+ bool fs::exists(fs::path path)
+diff --git a/RSDKv5/RSDK/Dev/Debug.cpp b/RSDKv5/RSDK/Dev/Debug.cpp
+index 9dc96e6..43c3145 100644
+--- a/RSDKv5/RSDK/Dev/Debug.cpp
++++ b/RSDKv5/RSDK/Dev/Debug.cpp
+@@ -326,6 +326,15 @@ void RSDK::DevMenu_MainMenu()
+     const int32 selectionCount   = 5;
+     uint32 selectionColors[]     = { 0x808090, 0x808090, 0x808090, 0x808090, 0x808090 };
+     const char *selectionNames[] = { "Resume", "Restart", "Stage Select", "Options", "Exit" };
++#elif defined(RSDK_CHIMERA_MOD_FS)
++    // Chimera: the Mods entry only when the project gives mods; without any,
++    // the menu the core had before it had the mod loader (Exit where it was)
++    const bool32 menuMods        = modList.size() != 0;
++    const int32 selectionCount   = menuMods ? 6 : 5;
++    uint32 selectionColors[]     = { 0x808090, 0x808090, 0x808090, 0x808090, 0x808090, 0x808090 };
++    const char *namesMods[]      = { "Resume", "Restart", "Stage Select", "Options", "Mods", "Exit" };
++    const char *namesPlain[]     = { "Resume", "Restart", "Stage Select", "Options", "Exit" };
++    const char **selectionNames  = menuMods ? namesMods : namesPlain;
+ #else
+     const int32 selectionCount   = 6;
+     uint32 selectionColors[]     = { 0x808090, 0x808090, 0x808090, 0x808090, 0x808090, 0x808090 };
+@@ -343,6 +352,11 @@ void RSDK::DevMenu_MainMenu()
+ 
+     y += 8;
+ #if RETRO_USE_MOD_LOADER
++#if defined(RSDK_CHIMERA_MOD_FS)
++    if (!menuMods)
++        ;
++    else
++#endif
+     if (devMenu.modsChanged)
+         DrawDevString("Game will restart on resume!", currentScreen->center.x, y, ALIGN_CENTER, 0xF08080);
+ #ifdef RETRO_DEV_EXTRA
+@@ -362,7 +376,9 @@ void RSDK::DevMenu_MainMenu()
+ 
+     for (int32 i = 0; i < selectionCount; ++i) {
+         DrawDevString(selectionNames[i], currentScreen->center.x, y, ALIGN_CENTER, selectionColors[i]);
+-#if RETRO_USE_MOD_LOADER
++#if RETRO_USE_MOD_LOADER && defined(RSDK_CHIMERA_MOD_FS)
++        y += menuMods ? 10 : 12;
++#elif RETRO_USE_MOD_LOADER
+         y += 10;
+ #else
+         y += 12;
+@@ -515,6 +531,12 @@ void RSDK::DevMenu_MainMenu()
+             case 4: RenderDevice::isRunning = false; break;
+ #else
+             case 4:
++#if defined(RSDK_CHIMERA_MOD_FS)
++                if (!menuMods) {
++                    RenderDevice::isRunning = false;
++                    break;
++                }
++#endif
+                 LoadMods(true); // reload our mod list real quick
+                 if (modList.size() != 0) {
+                     devMenu.state     = DevMenu_ModsMenu;

@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1 no és un fitxer de dades de Retro Engine: fa %2 bytes.",
 		"error.is_not_a_retro_engine_v5": "%1 no és un fitxer de dades de Retro Engine v5 (no comença amb RSDKv5)",
 		"error.is_too_large_bytes_for_the": "%1 és massa gran (%2 bytes) per a la memòria del nucli.",
+		"error.mod_needs_native_code": "El mod %1 (a %2) necessita codi compilat propi (%3), que no pot funcionar dins l'entorn aïllat del nucli. Només es poden usar mods fets de fitxers de dades.",
+		"error.mod_wrong_engine": "El mod %1 (a %2) és per a la versió %3 del Retro Engine, no per a la versió 5, que fa funcionar Sonic Mania.",
+		"error.mods_could_not_be_read": "No s'ha pogut llegir sencer %1: el zip està malmès.",
+		"error.mods_no_mod_ini": "%1 no conté cap mod: cap carpeta no té un mod.ini.",
+		"error.mods_not_zip": "%1 no és un zip: els mods es donen com un zip de carpetes de mod, cadascuna amb el seu mod.ini.",
+		"error.mods_same_folder": "Hi ha dos mods anomenats %1 (el segon a %2): cada mod necessita un nom de carpeta propi.",
+		"error.mods_too_large": "Els mods ocupen %1 MiB descomprimits, més del que cap a la memòria del nucli.",
 		"error.save_data_could_not_be": "No s'ha pogut obrir la partida desada %1.",
 		"error.save_data_has_more_than": "La partida desada té més de %1 fitxers.",
 		"error.save_data_is_not_one_this": "La partida desada %1 no és cap que aquest nucli accepti: Settings.ini és la configuració del projecte, i un nom té com a màxim %2 caràcters.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "Quants píxels d'amplada té la pantalla (la configuració pixWidth del motor). 424 és el valor per defecte de l'original, una pantalla 16:9; 320 una 4:3. L'amplada canvia fins a on veu el jugador i quins objectes estan actius, de manera que canvia el joc, i una gravació la guarda.",
 		"setting.username": "Nom del jugador",
 		"setting.username.about": "El nom del jugador tal com el mostra el joc (username al fitxer de configuració del motor). Buit és el valor per defecte del joc. Se'n treuen els salts de línia, els claudàtors i els punts i coma; com a màxim 31 caràcters.",
+		"slot.mods": "Mods",
+		"slot.mods.help": "Mods per al carregador de mods de la decompilació: tants zips com vulguis, cadascun amb una o més carpetes de mod amb el seu mod.ini (un zip amb mod.ini a l'arrel és un sol mod, amb el nom del zip). Es carreguen quan comença el joc, en l'ordre d'aquesta llista, i formen part de la màquina: una pel·lícula feta amb mods necessita els mateixos mods per reproduir-se. Quan dos mods tenen el mateix fitxer, s'usa el que és més amunt a la llista. Els mods fets de fitxers de dades funcionen; un mod amb codi compilat propi (un LogicFile al seu mod.ini) no pot funcionar dins l'entorn aïllat del nucli i es rebutja. El que escriu un mod es queda dins la màquina. No es baixa res. Deixa-ho buit si no en vols cap.",
 		"slot.savedata": "Dades de partida",
 		"slot.savedata.help": "Els fitxers que va escriure el joc, tal com els va donar Emulador > Exporta les dades de partida: SaveData.bin (el progrés dels fitxers de partida) i qualsevol altre que el joc guardi, amb els seus propis noms. Es posen al seu lloc abans que comenci el joc, de manera que el joc els troba com a propis."
 	}

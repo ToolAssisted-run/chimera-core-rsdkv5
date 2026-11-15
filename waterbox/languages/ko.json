@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1은(는) Retro Engine 데이터 파일이 아닙니다. 길이가 %2바이트입니다.",
 		"error.is_not_a_retro_engine_v5": "%1은(는) Retro Engine v5 데이터 파일이 아닙니다 (RSDKv5로 시작하지 않음).",
 		"error.is_too_large_bytes_for_the": "%1이(가) 너무 큽니다 (%2바이트). 코어의 메모리에 들어가지 않습니다.",
+		"error.mod_needs_native_code": "모드 %1(%2 안)은 자체 컴파일 코드(%3)가 필요하지만, 코어의 샌드박스에서는 실행할 수 없습니다. 데이터 파일로 된 모드만 사용할 수 있습니다.",
+		"error.mod_wrong_engine": "모드 %1(%2 안)은 Retro Engine 버전 %3용이며, Sonic Mania를 실행하는 버전 5용이 아닙니다.",
+		"error.mods_could_not_be_read": "%1을(를) 끝까지 읽을 수 없습니다. zip이 손상되었습니다.",
+		"error.mods_no_mod_ini": "%1에 모드가 없습니다. mod.ini가 있는 폴더가 없습니다.",
+		"error.mods_not_zip": "%1은(는) zip이 아닙니다. 모드는 각각 mod.ini가 있는 모드 폴더들의 zip으로 넣어야 합니다.",
+		"error.mods_same_folder": "이름이 %1인 모드가 둘 있습니다(두 번째는 %2 안). 모드마다 고유한 폴더 이름이 필요합니다.",
+		"error.mods_too_large": "모드의 압축을 풀면 %1MiB로, 코어의 메모리에 들어갈 수 있는 것보다 큽니다.",
 		"error.save_data_could_not_be": "저장 데이터 %1을(를) 열 수 없습니다.",
 		"error.save_data_has_more_than": "저장 데이터에 파일이 %1개보다 많습니다.",
 		"error.save_data_is_not_one_this": "저장 데이터 %1은(는) 이 코어가 받는 파일이 아닙니다. Settings.ini는 프로젝트의 설정이며, 이름은 최대 %2자입니다.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "화면의 가로 픽셀 수입니다(엔진의 pixWidth 설정). 424는 업스트림의 기본값으로 16:9 화면이며, 320은 4:3 화면입니다. 너비는 플레이어가 얼마나 멀리 보는지와 어떤 오브젝트가 깨어 있는지를 바꾸므로 게임을 바꾸며, 무비에 기록됩니다.",
 		"setting.username": "플레이어 이름",
 		"setting.username.about": "게임이 보여 주는 플레이어의 이름입니다(엔진 설정 파일의 username). 비워 두면 게임 자체의 기본값입니다. 줄바꿈, 괄호, 세미콜론은 빠집니다. 최대 31자입니다.",
+		"slot.mods": "모드",
+		"slot.mods.help": "디컴파일판 모드 로더용 모드입니다. zip을 몇 개든 넣을 수 있으며, 각 zip에는 mod.ini가 있는 모드 폴더가 하나 이상 들어 있습니다(루트에 mod.ini가 있는 zip은 zip 이름을 딴 모드 하나입니다). 게임이 시작될 때 이 목록의 순서대로 불러오며 머신의 일부가 됩니다. 모드로 만든 무비를 재생하려면 같은 모드가 필요합니다. 두 모드에 같은 파일이 있으면 목록에서 더 위에 있는 모드의 파일이 쓰입니다. 데이터 파일로 된 모드는 작동합니다. 자체 컴파일 코드가 있는 모드(mod.ini의 LogicFile)는 코어의 샌드박스에서 실행될 수 없으므로 거부됩니다. 모드가 쓰는 내용은 머신 안에 남습니다. 아무것도 다운로드하지 않습니다. 사용하지 않으려면 비워 두세요.",
 		"slot.savedata": "저장 데이터",
 		"slot.savedata.help": "Emulator > Export Save Data로 준 게임이 쓴 파일입니다. SaveData.bin(저장 파일의 진행 상황)과 게임이 보관하는 다른 파일이며, 자기 이름 그대로입니다. 게임이 시작되기 전에 제자리에 놓이므로 게임은 이 파일을 자기 것으로 찾습니다."
 	}

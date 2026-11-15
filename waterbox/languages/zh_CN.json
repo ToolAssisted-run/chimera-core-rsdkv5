@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1 不是 Retro Engine 数据文件：它的长度是 %2 字节。",
 		"error.is_not_a_retro_engine_v5": "%1 不是 Retro Engine v5 数据文件（它的开头不是 RSDKv5）",
 		"error.is_too_large_bytes_for_the": "%1 太大（%2 字节），核心的内存放不下。",
+		"error.mod_needs_native_code": "模组 %1(在 %2 中)需要自己的编译代码(%3),这些代码无法在核心的沙盒中运行。只能使用由数据文件组成的模组。",
+		"error.mod_wrong_engine": "模组 %1(在 %2 中)是为 Retro Engine 第 %3 版制作的,不是运行 Sonic Mania 的第 5 版。",
+		"error.mods_could_not_be_read": "无法完整读取 %1:zip 已损坏。",
+		"error.mods_no_mod_ini": "%1 中没有模组:其中没有任何文件夹含有 mod.ini。",
+		"error.mods_not_zip": "%1 不是 zip:模组应以 zip 形式提供,内含模组文件夹,每个都有自己的 mod.ini。",
+		"error.mods_same_folder": "有两个模组都叫 %1(第二个在 %2 中):每个模组都需要自己的文件夹名。",
+		"error.mods_too_large": "模组解压后有 %1 MiB,超出了核心内存的容量。",
 		"error.save_data_could_not_be": "无法打开存档数据 %1。",
 		"error.save_data_has_more_than": "存档数据的文件超过 %1 个。",
 		"error.save_data_is_not_one_this": "存档数据 %1 不是本核心能接受的：Settings.ini 是项目的设置，文件名最多 %2 个字符。",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "屏幕有多少像素宽（引擎的 pixWidth 设置）。424 是上游的默认值，即 16:9 屏幕；320 是 4:3 屏幕。宽度会改变玩家能看到多远以及哪些对象处于激活状态，因此会改变游戏，录像会记录它。",
 		"setting.username": "玩家名",
 		"setting.username.about": "游戏显示的玩家名字（引擎设置文件中的 username）。留空则使用游戏自己的默认名。换行、括号和分号会被去掉；最多 31 个字符。",
+		"slot.mods": "模组",
+		"slot.mods.help": "供反编译版模组加载器使用的模组:可以放任意多个 zip,每个 zip 含一个或多个带 mod.ini 的模组文件夹(根目录有 mod.ini 的 zip 就是一个模组,以 zip 的名字命名)。它们在游戏启动时按此列表的顺序加载,并成为机器的一部分:用模组录制的影片需要同样的模组才能重放。两个模组有同一个文件时,使用列表中靠上的那个。由数据文件组成的模组可以使用;带有自己编译代码的模组(mod.ini 中的 LogicFile)无法在核心的沙盒中运行,会被拒绝。模组写入的内容留在机器内部。不会下载任何东西。不使用模组时请留空。",
 		"slot.savedata": "存档数据",
 		"slot.savedata.help": "游戏写下的文件，即由“模拟器 > 导出存档数据”给出的文件：SaveData.bin（存档文件的进度）以及游戏保存的其他文件，保持它们自己的文件名。它们会在游戏开始前放到位，游戏会把它们当作自己的存档。"
 	}

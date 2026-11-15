@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "A(z) %1 nem Retro Engine adatfájl: %2 bájt hosszú.",
 		"error.is_not_a_retro_engine_v5": "A(z) %1 nem Retro Engine v5 adatfájl (nem az RSDKv5 szóval kezdődik)",
 		"error.is_too_large_bytes_for_the": "A(z) %1 túl nagy (%2 bájt) a mag memóriájához.",
+		"error.mod_needs_native_code": "A(z) %1 mod (itt: %2) saját lefordított kódot igényel (%3), amely nem futhat a mag elkülönített környezetében. Csak adatfájlokból álló modok használhatók.",
+		"error.mod_wrong_engine": "A(z) %1 mod (itt: %2) a Retro Engine %3. verziójához készült, nem az 5. verzióhoz, amely a Sonic Maniát futtatja.",
+		"error.mods_could_not_be_read": "%1 nem olvasható be teljesen: a zip sérült.",
+		"error.mods_no_mod_ini": "%1 nem tartalmaz modot: egyik mappájában sincs mod.ini.",
+		"error.mods_not_zip": "%1 nem zip: a modokat modmappák zipjeként kell megadni, mindegyikben a saját mod.ini fájllal.",
+		"error.mods_same_folder": "Két mod neve %1 (a második itt: %2): minden modnak saját mappanév kell.",
+		"error.mods_too_large": "A modok kibontva %1 MiB méretűek, több, mint amennyi a mag memóriájában elfér.",
 		"error.save_data_could_not_be": "A(z) %1 mentési adatot nem lehetett megnyitni.",
 		"error.save_data_has_more_than": "A mentési adatban %1-nél több fájl van.",
 		"error.save_data_is_not_one_this": "A(z) %1 mentési adat nem olyan, amelyet ez a mag elfogad: a Settings.ini a projekt beállításai, a név pedig legfeljebb %2 karakter.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "Hány pixel széles a képernyő (a motor pixWidth beállítása). A 424 az upstream alapértelmezése, egy 16:9-es képernyő; a 320 egy 4:3-as. A szélesség azt változtatja, meddig lát előre a játékos és mely objektumok élnek, ezért megváltoztatja a játékot, és egy felvétel rögzíti.",
 		"setting.username": "Játékos neve",
 		"setting.username.about": "A játékos neve, ahogy a játék mutatja (az username a motor beállítófájljában). Üresen a játék saját alapértelmezése. A sortörések, zárójelek és pontosvesszők kimaradnak; legfeljebb 31 karakter.",
+		"slot.mods": "Modok",
+		"slot.mods.help": "Modok a dekompiláció modbetöltőjéhez: tetszőleges számú zip, mindegyikben egy vagy több modmappa a mod.ini fájljával (az a zip, amelynek gyökerében mod.ini van, egyetlen mod, a zip nevével). A játék indulásakor töltődnek be, e lista sorrendjében, és a gép részei: a modokkal készült film lejátszásához ugyanazok a modok kellenek. Ha két modban ugyanaz a fájl van, a listában feljebb lévőé érvényes. Az adatfájlokból álló modok működnek; a saját lefordított kóddal bíró mod (LogicFile a mod.ini-ben) nem futhat a mag elkülönített környezetében, ezért elutasításra kerül. Amit egy mod ír, a gépen belül marad. Semmi sem töltődik le. Hagyja üresen, ha nem kér egyet sem.",
 		"slot.savedata": "Mentett adatok",
 		"slot.savedata.help": "A fájlok, amelyeket a játék írt, ahogy az Emulator > Export Save Data adta őket: SaveData.bin (a mentett fájlok haladása) és minden más, amit a játék tart, a saját nevükön. A játék indulása előtt a helyükre kerülnek, így a játék a saját mentéseiként találja őket."
 	}

@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1 bukan file data Retro Engine: panjangnya %2 byte.",
 		"error.is_not_a_retro_engine_v5": "%1 bukan file data Retro Engine v5 (tidak diawali RSDKv5)",
 		"error.is_too_large_bytes_for_the": "%1 terlalu besar (%2 byte) untuk memori core.",
+		"error.mod_needs_native_code": "Mod %1 (di %2) memerlukan kode terkompilasi sendiri (%3), yang tidak dapat berjalan di sandbox core. Hanya mod yang terdiri dari berkas data yang dapat dipakai.",
+		"error.mod_wrong_engine": "Mod %1 (di %2) dibuat untuk Retro Engine versi %3, bukan versi 5 yang menjalankan Sonic Mania.",
+		"error.mods_could_not_be_read": "%1 tidak dapat dibaca utuh: zip-nya rusak.",
+		"error.mods_no_mod_ini": "%1 tidak berisi mod: tidak ada folder di dalamnya yang memiliki mod.ini.",
+		"error.mods_not_zip": "%1 bukan zip: mod diberikan sebagai zip berisi folder mod, masing-masing dengan mod.ini-nya.",
+		"error.mods_same_folder": "Ada dua mod bernama %1 (yang kedua di %2): setiap mod memerlukan nama folder sendiri.",
+		"error.mods_too_large": "Mod berukuran %1 MiB setelah diekstrak, melebihi ruang di memori core.",
 		"error.save_data_could_not_be": "Data simpanan %1 tidak dapat dibuka.",
 		"error.save_data_has_more_than": "Data simpanan memiliki lebih dari %1 file.",
 		"error.save_data_is_not_one_this": "Data simpanan %1 bukan jenis yang diterima core ini: Settings.ini adalah pengaturan proyek, dan nama file paling banyak %2 karakter.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "Lebar layar dalam piksel (pengaturan pixWidth mesin). 424 adalah bawaan upstream, layar 16:9; 320 adalah layar 4:3. Lebar memengaruhi seberapa jauh pemain bisa melihat ke depan dan objek mana yang aktif, jadi ini mengubah game, dan rekaman mencatatnya.",
 		"setting.username": "Nama Pemain",
 		"setting.username.about": "Nama pemain seperti yang ditampilkan game (username di file pengaturan mesin). Kosong berarti nama bawaan game. Baris baru, kurung, dan titik koma dihilangkan; paling banyak 31 karakter.",
+		"slot.mods": "Mod",
+		"slot.mods.help": "Mod untuk pemuat mod dekompilasi: berapa pun banyaknya zip, masing-masing berisi satu atau lebih folder mod beserta mod.ini-nya (zip yang memiliki mod.ini di akarnya adalah satu mod, dinamai seperti zip-nya). Mod dimuat saat permainan dimulai, sesuai urutan daftar ini, dan menjadi bagian dari mesin: film yang dibuat dengan mod memerlukan mod yang sama agar bisa diputar ulang. Jika dua mod memiliki berkas yang sama, yang lebih atas dalam daftar yang dipakai. Mod yang terdiri dari berkas data berfungsi; mod dengan kode terkompilasi sendiri (LogicFile di mod.ini-nya) tidak dapat berjalan di sandbox core dan ditolak. Apa yang ditulis mod tetap berada di dalam mesin. Tidak ada yang diunduh. Biarkan kosong jika tidak ada.",
 		"slot.savedata": "Data simpanan",
 		"slot.savedata.help": "File yang ditulis game, seperti yang diberikan Emulator > Export Save Data: SaveData.bin (kemajuan file simpanan) dan file lain yang disimpan game, dengan nama aslinya. File ini diletakkan di tempatnya sebelum game dimulai, sehingga game menemukannya sebagai miliknya sendiri."
 	}

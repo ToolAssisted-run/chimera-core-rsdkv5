@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1 is geen gegevensbestand van de Retro Engine: het is %2 bytes lang.",
 		"error.is_not_a_retro_engine_v5": "%1 is geen gegevensbestand van de Retro Engine v5 (het begint niet met RSDKv5).",
 		"error.is_too_large_bytes_for_the": "%1 is te groot (%2 bytes) voor het geheugen van de core.",
+		"error.mod_needs_native_code": "De mod %1 (in %2) heeft eigen gecompileerde code nodig (%3), die niet kan draaien in de sandbox van de core. Alleen mods van gegevensbestanden kunnen worden gebruikt.",
+		"error.mod_wrong_engine": "De mod %1 (in %2) is voor versie %3 van de Retro Engine, niet voor versie 5, die Sonic Mania speelt.",
+		"error.mods_could_not_be_read": "%1 kon niet helemaal worden gelezen: de zip is beschadigd.",
+		"error.mods_no_mod_ini": "%1 bevat geen mod: geen map erin heeft een mod.ini.",
+		"error.mods_not_zip": "%1 is geen zip: mods worden gegeven als een zip van modmappen, elk met zijn mod.ini.",
+		"error.mods_same_folder": "Twee mods heten %1 (de tweede in %2): elke mod heeft een eigen mapnaam nodig.",
+		"error.mods_too_large": "De mods zijn uitgepakt %1 MiB, meer dan er in het geheugen van de core past.",
 		"error.save_data_could_not_be": "De opgeslagen gegevens %1 konden niet worden geopend.",
 		"error.save_data_has_more_than": "De opgeslagen gegevens bevatten meer dan %1 bestanden.",
 		"error.save_data_is_not_one_this": "De opgeslagen gegevens %1 zijn er niet een die deze core aanneemt: Settings.ini is de instelling van het project, en een naam mag hooguit %2 tekens lang zijn.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "Hoeveel pixels breed het scherm is (de instelling pixWidth van de engine). 424 is de standaard van de bovenstroom, een scherm van 16:9; 320 is een scherm van 4:3. De breedte verandert hoe ver de speler vooruit ziet en welke objecten wakker zijn, dus ze verandert het spel, en een opname bewaart haar.",
 		"setting.username": "Spelersnaam",
 		"setting.username.about": "De naam van de speler zoals het spel die toont (username in het instellingenbestand van de engine). Leeg is de eigen standaard van het spel. Regeleindes, haakjes en puntkomma's worden weggelaten; hooguit 31 tekens.",
+		"slot.mods": "Mods",
+		"slot.mods.help": "Mods voor de modlader van de decompilatie: zoveel zips als je wilt, elk met een of meer modmappen met hun mod.ini (een zip met mod.ini in de hoofdmap is één mod, genoemd naar de zip). Ze worden geladen wanneer het spel start, in de volgorde van deze lijst, en horen bij de machine: een film gemaakt met mods heeft dezelfde mods nodig om af te spelen. Hebben twee mods hetzelfde bestand, dan wordt dat van de mod die hoger in de lijst staat gebruikt. Mods van gegevensbestanden werken; een mod met eigen gecompileerde code (een LogicFile in zijn mod.ini) kan niet draaien in de sandbox van de core en wordt geweigerd. Wat een mod schrijft, blijft in de machine. Er wordt niets gedownload. Laat leeg voor geen.",
 		"slot.savedata": "Opgeslagen gegevens",
 		"slot.savedata.help": "De bestanden die het spel schreef, zoals Emulator > Export Save Data ze gaf: SaveData.bin (de voortgang van de opslagbestanden) en elk ander bestand dat het spel bewaart, onder hun eigen namen. Ze worden op hun plaats gezet voordat het spel start, zodat het spel ze als zijn eigen vindt."
 	}

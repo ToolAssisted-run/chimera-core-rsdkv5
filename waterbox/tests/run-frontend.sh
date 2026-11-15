@@ -3,8 +3,12 @@
 # Sonic Mania's data file (-d, or tests/roms-local/Data.rsdk; never in the
 # repository): power-on into Green Hill, 5500 frames (its timer running by
 # then). Without the
-# data file only the package is built.
+# data file only the package is built, and the mods are tried.
 #
+# - chimera-run with mods (no game needed): a project of the tests' own data
+#   file with two mods in its Mods slot (tests/make-mods.py), its machine
+#   the native reference's, straight, rerecorded, carried in a state into
+#   another process, and replayed from the movie chimera-run recorded.
 # - chimera-run (the engine, no frontend): the route from a movie file
 #   and from a hand-written project. The Game State and Players
 #   domains and the last picture must be the native reference's.
@@ -72,6 +76,89 @@ else
 	report "package" FAIL "see build/frontend/package.log"; echo; echo "$ok ok, $failed failed"; exit 1
 fi
 pkg="$work/pkg/rsdkv5.chimeraCore"
+
+# ---------------------------------------------------------------- mods
+# The project's mods (chimera#590) through chimera-run, on the tests' own
+# data file and mods (tests/make-mods.py; no game needed): a project of the
+# data file with alpha.zip and beta.zip in its Mods slot and the Developer
+# Menu setting on, whose movie opens the developer menu, turns alpha off on
+# its Mods page and restarts the game (240 frames). Its Game State, Players
+# and last picture must be the native reference's; so must a run with a
+# state around every frame, a state carried into another process, and the
+# movie chimera-run records, made into a project again and replayed; and the
+# project must name the zips, in order, by their SHA-1.
+mw="$work/mods"
+mkdir -p "$mw/p" "$mw/rest" "$mw/rec" "$mw/native"
+if [ ! -x "$crun" ]; then
+	report "engine:mods" SKIP "no chimera-run at $crun"
+elif ! python3 -I "$wb/tests/make-mods.py" "$mw/src" > "$mw/make.log" 2>&1; then
+	report "engine:mods" FAIL "the test mods were not made: $(tail -1 "$mw/make.log")"
+else
+	mf=240
+	python3 - "$mw" "$mf" <<'PY'
+import sys
+out, n = sys.argv[1], int(sys.argv[2])
+held = [""] * n
+def press(at, keys, length=2):
+    for f in range(at, min(at + length, n)):
+        held[f] += keys
+# Dev Menu, down to Mods, A, A (alpha off), B (back), up to Resume, A
+press(10, "E")
+for at in (20, 30, 40, 50): press(at, "D")
+press(60, "A"); press(70, "A"); press(80, "B")
+for at in (90, 100, 110, 120): press(at, "U")
+press(130, "A"); press(200, "E")
+open(out + "/mods.movie", "w").write("\n".join(held) + "\n")
+p1 = ["Up", "Down", "Left", "Right", "A", "B", "C", "X", "Y", "Z", "Start", "Select"]
+letter = {"Up": "U", "Down": "D", "Left": "L", "Right": "R", "A": "A", "B": "B", "C": "C", "X": "X", "Y": "Y", "Z": "Z", "Start": "S", "Select": "s"}
+key = "LogKey:#" + "".join("P1 %s|" % b for b in p1) + "#" + "".join("P2 %s|" % b for b in p1) + "#Dev Menu|"
+def row(h):
+    return "|" + "".join(letter[b] if letter[b] in h else "." for b in p1) + "|" + "." * 12 + "|" + ("E" if "E" in h else ".") + "|"
+def log(rows):
+    return "[Input]\n" + key + "\n" + "".join(row(h) + "\n" for h in rows) + "[/Input]\n"
+open(out + "/mods.log", "w").write(log(held))
+open(out + "/rest.log", "w").write(log(held[100:]))
+PY
+	cp "$mw/src/Data.rsdk" "$mw/src/alpha.zip" "$mw/src/beta.zip" "$mw/native/"
+	printf '{"devMenu": true}' > "$mw/native/settings"
+	printf '{"mods": ["alpha.zip", "beta.zip"]}' > "$mw/native/slots"
+	"$rn" "$mw/native" --frames $mf --movie "$mw/mods.movie" --dump-domain "Game State" "$mw/native.gs.bin" \
+		--screenshot "$((mf - 1)):$mw/native.tga" > /dev/null 2>&1
+	"$rn" "$mw/native" --frames $mf --movie "$mw/mods.movie" --dump-domain "Players" "$mw/native.pl.bin" > /dev/null 2>&1
+	for d in p rest rec; do cp "$mw/src/Data.rsdk" "$mw/src/alpha.zip" "$mw/src/beta.zip" "$mw/$d/"; done
+	newp() { # newp <dir> <movie>: the project, as chimera-run makes one
+		"$crun" --new-project "$mw/$1/mods.chimeraProject" "$pkg" --movie "$2" --settings '{"devMenu": true}' \
+			--firmware "Data.rsdk=$mw/$1/Data.rsdk" --file "mods=$mw/$1/alpha.zip" --file "mods=$mw/$1/beta.zip" > "$mw/$1.new.log" 2>&1
+	}
+	runp() { # runp <dir> <tag> [options]
+		d="$1"; t="$2"; shift 2
+		( cd "$mw" && "$crun" --project "$mw/$d/mods.chimeraProject" "$pkg" --firmware "Data.rsdk=$mw/$d/Data.rsdk" \
+			--meta "$mw/$t.meta" "$@" > "$mw/$t.log" 2>&1 )
+	}
+	ends() { # ends <tag>: its Game State, Players and last picture are the reference's
+		grep -q '^status=OK' "$mw/$1.meta" 2>/dev/null && cmp -s "$mw/native.gs.bin" "$mw/$1.gs" && cmp -s "$mw/native.pl.bin" "$mw/$1.pl" &&
+			python3 "$here/compare-pictures.py" "$mw/native.tga" "$mw/$1.tga" > /dev/null 2>&1
+	}
+	newp p "$mw/mods.log"
+	newp rest "$mw/rest.log"
+	runp p m1 --frames $mf --dump "Game State=$mw/m1.gs" --dump "Players=$mw/m1.pl" --final-screenshot "$mw/m1.tga" --record "$mw/rec.log"
+	runp p m2 --frames $mf --rerecord --dump "Game State=$mw/m2.gs" --dump "Players=$mw/m2.pl" --final-screenshot "$mw/m2.tga"
+	runp p m3 --frames 100 --save-state "99=$mw/m3.state"
+	runp rest m4 --state "$mw/m3.state" --frames $((mf - 100)) --dump "Game State=$mw/m4.gs" --dump "Players=$mw/m4.pl" --final-screenshot "$mw/m4.tga"
+	newp rec "$mw/rec.log"
+	runp rec m5 --frames $mf --dump "Game State=$mw/m5.gs" --dump "Players=$mw/m5.pl" --final-screenshot "$mw/m5.tga"
+	named="$(python3 - "$mw/p/mods.chimeraProject" "$(sha1sum "$mw/src/alpha.zip" | cut -c1-40)" "$(sha1sum "$mw/src/beta.zip" | cut -c1-40)" <<'PY' 2> /dev/null
+import json, sys, zipfile
+files = [f for f in json.loads(zipfile.ZipFile(sys.argv[1]).read("project.json"))["files"] if f.get("slot") == "mods"]
+print("yes" if [(f["name"], f["sha1"].lower()) for f in files] == [("alpha.zip", sys.argv[2]), ("beta.zip", sys.argv[3])] else "no: %s" % files)
+PY
+)"
+	if ends m1 && ends m2 && ends m4 && ends m5 && [ "$named" = yes ]; then
+		report "engine:mods" PASS "a project with alpha.zip and beta.zip in its Mods slot: Game State, Players and the last picture are the reference's after $mf frames, with a state around every frame, from a state carried into another process, and replaying the movie chimera-run recorded; the zips are in the project in order, by SHA-1"
+	else
+		report "engine:mods" FAIL "straight $(ends m1 && echo same || echo "differs $(grep -m1 detail= "$mw/m1.meta" 2>/dev/null)"); rerecord $(ends m2 && echo same || echo differs); carried $(ends m4 && echo same || echo differs); recorded $(ends m5 && echo same || echo differs); named $named; $(tail -1 "$mw/p.new.log")"
+	fi
+fi
 
 if [ ! -f "$game" ]; then
 	report "game" SKIP "no Sonic Mania data file at $game (-d); it is never in the repository"

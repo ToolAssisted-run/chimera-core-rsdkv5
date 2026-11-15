@@ -166,10 +166,161 @@ on, not with it off; native = sandbox), `players` (with Players 4, player
 native = sandbox) and `settings` for the name (CHIMERA draws another main
 menu; native = sandbox).
 
+## Mods (owner, 2026-11-15, issue 590)
+
+The owner's decision, Chimera issue 590: mods as a project slot. The
+decompilation's mod loader is turned on; a project holds mods as zips of the
+decompilation's mod folders, each recorded by its SHA-1, loaded at power-on
+and part of the machine, so a movie replays with the same mods. Nothing is
+downloaded. What a mod writes stays inside the machine, never on the
+computer's disk. A mod with compiled code of its own is refused with a text
+that names it. The model is the Cemu core's Graphic Packs slot. No change to
+Chimera.
+
+**What a mod is.** A folder with a mod.ini (its name, author, version and
+options) and the files it replaces or adds, at the same paths as in the
+data file: Data/Palettes, Data/Sprites, Data/Stages, Data/Game/GameConfig.bin
+and so on. A Data/Game/Game.xml adds to the game's configuration (a title,
+palettes, objects, sound effects, stages) on top of the data file's. A mod
+can also carry compiled code (mod.ini's LogicFile: a Windows or Linux
+library) that the engine loads to change the game's logic. The decompilation
+has no script language for a v5 game: Sonic Mania's logic is compiled code,
+compiled into this core, so a mod changes it only with a LogicFile. (The
+engine's Scripts folders and TxtScripts are for the v3 and v4 games, which
+this core does not play.)
+
+**The slot.** `mods`, "Mods", in `file_slots.json`: any number of zips
+(`min` 0, `max` -1, format `zip`). A zip holds one or more mod folders, each
+with its mod.ini, at its root or deeper; a zip with mod.ini at its root is
+one mod, named as the zip. The project records each zip by its name and
+SHA-1, in the slot's order, as it records any slot's file.
+
+**How they are loaded** (`waterbox/rsdk-files.c`, `waterbox/mod-fs.hpp`,
+`patches/0003`). At Init, before the seal, each zip is read (miniz, which
+the engine already has) and every mod's files are unpacked into one block of
+sealed memory, read-only from then on and in no savestate, as the folder
+mods/<the mod's folder>/ of a "mods" folder that exists only in the
+machine. The core writes the engine's own modconfig.ini there (every mod on,
+in order). Then upstream's own mod loader runs as it does on a PC. It finds
+its mods folder with std::filesystem, which the sandbox cannot answer (its
+files have no folders); patch 0003 has ModAPI.cpp take the core's
+`mod-fs.hpp` instead, which answers the same questions (is there a file or
+a folder at this path, what does this folder hold) from the unpacked mods,
+as upstream's Android build answers them with its own. Both builds use it,
+so the native reference reads no disk either. A mod's files are then opened
+through the core's file layer like the data file.
+
+**The order** follows the slot: the mods of its first zip first. Upstream's
+own order file, the mods folder's modconfig.ini, is used inside a zip: when
+a zip has one beside its mod folders (a zip of a whole mods folder), its
+order is that zip's order and a mod it turns off is left out; else the
+folders are taken by name. Between zips the slot decides, since the project
+records that order and the window shows it. The engine then does what it
+does with its own list: where two mods have the same file, the one that
+comes first is used (the top of the developer menu's Mods page). Every
+mod's Game.xml is read, the first one's first, each adding to what the
+others added; where two set one thing (the game's title), the later one's
+stays, as upstream does.
+
+**Refused,** each with a text in all 26 languages that names the zip, and
+the mod where there is one: a file that is not a zip; a zip with no mod.ini;
+two mods with one folder name; a mod for another version of the engine
+(TargetVersion or ForceVersion other than 5); mods larger than the room left
+in sealed memory (1024 MiB less the data file, about 825 MiB with Sonic
+Mania's); and a mod with compiled code (a LogicFile). That code is a
+library built for Windows or Linux that the engine would load with the
+computer's dynamic loader. The sandbox has no dynamic loader and runs only
+code built for it, so such a mod cannot work here, and loading its data
+without its code would be another mod than its author made.
+
+**What a mod writes.** The mod loader writes three kinds of file into the
+mods folder: a mod's modConfig.cfg (when its mod.ini names a ConfigFile, as
+it loads), a mod's modSettings.ini and the folder's modconfig.ini (when the
+developer menu's Mods page saves). They are files in guest memory like the
+game's saves, kept by their whole path, so each mod has its own; a savestate
+carries them. They are not in Export Save Data: they are the mod loader's,
+written again from the mods' own files. A mod's RedirectSaveRAM puts the
+game's saves in its folder: there they are the game's saves under their own
+names (SaveData.bin), exported and taken back by the Save data slot as
+always.
+
+**No mods: the machine as before.** Built with the mod loader, the engine
+behaves the same when there are no mods except in two places, both changed
+by patch 0003 for this build only: the mod loader drew a loading screen
+("Mod loading done!") into the game's screen at power-on, which stayed in
+the first frames (the machine shows nothing while it starts, so the core
+leaves it out, mods or not), and the developer menu gained a Mods entry,
+which moved Exit down (it is there only when the project has mods). The
+Mods page lets a player turn mods off and on and reorder them, inside the
+machine: a movie records the presses, and the project's slot stays what it
+was.
+
+**Measured** (2026-11-15, jaffanator01, in the chimera-dev container,
+Ubuntu 24.04, GCC 13.3). Sonic Mania's data file is not on jaffanator01 or
+on the machine the work was done from, so nothing here played Sonic Mania.
+The tests use content of their own, made when they run
+(`waterbox/tests/make-mods.py`): a data file of one file, a GameConfig.bin
+whose title is CHIMERA PACK, and mods that replace it or add to it. The
+engine runs it with nothing to play; with the Developer Menu setting on,
+Dev Menu opens the engine's developer menu, which draws the game's title,
+so what a mod changes is in the picture. The pictures were looked at:
+CHIMERA PACK with no mods; ALPHA MOD with alpha.zip first, BETA MOD with
+beta.zip first; TWO MOD for a zip whose modconfig.ini puts Two first; XML
+MOD with the version PACK still the data file's for a Game.xml; the Mods
+page listing Alpha Mod and Beta Mod, both on; and after alpha is turned off
+there and the game restarted, BETA MOD.
+
+- run-gate.sh, without the game: 21 passed (5 of them the tests there
+  were, 16 new), the game's tests skipped. The new: a mod's GameConfig.bin
+  and Game.xml change the game; the slot's order and a zip's modconfig.ini;
+  two mods native = sandbox; the five refusals, in both builds; the
+  modconfig.ini the engine writes read back after the restart, and none of
+  the mod loader's files in Export Save Data; under strace, neither build
+  opens a file on the disk to write (but the harness's own picture) or
+  makes, removes or renames one, along a route on which the engine writes
+  alpha's modConfig.cfg and modconfig.ini twice (seen under gdb: every
+  write lands in the core's file layer); along that route, native = sandbox
+  = a state saved and loaded before every frame = a state saved at frame
+  75, 100 or 150 and loaded into a new host; and with no mods the digests
+  (picture, sound, frame lengths, lag, memory) of the commit before, with
+  the developer menu opened and moved through and without, in both builds.
+- run-frontend.sh, without the game: the package, and engine:mods: a
+  project made by chimera-run with alpha.zip and beta.zip in its Mods slot
+  and that route as its movie: Game State, Players and the last picture are
+  the native reference's after 240 frames, straight, with a state around
+  every frame, from a state carried into another process, and replaying the
+  movie chimera-run recorded, made into a project again; the project names
+  the zips in order by SHA-1. 2 passed, the game skipped.
+- Chimera's contract tests on the package: 24 passed.
+- Seen to fail, once each, by breaking the code: the slot ignored (the
+  change, the order, the refusals and the read-back fail); the engine's
+  modconfig.ini written in reverse; a zip's modconfig.ini ignored; the
+  LogicFile check off; the mod loader's writes also tried on the disk (the
+  strace test names the open); its writes kept by their last name only (the
+  read-back); its files let into Export Save Data; the order made to follow
+  where the host put the mods (native = sandbox, and the order, fail
+  natively); a count of the engine's writes kept outside the machine's
+  state deciding which GameConfig.bin is read (the state saved at frame 100
+  and loaded into a new host fails, at 75 and 150 not, as expected); the
+  Mods entry always in the developer menu (no mods = before); the slot left
+  out of the package (engine:mods: chimera-run refuses the project). A
+  break that only the test of a state around every frame would catch was
+  not found: a state saved and loaded in the same host gives back what was
+  just saved.
+
+Not tried: Sonic Mania's own data with any mod (the data file was not
+there), and so no mod of the community, no sprite, palette or stage of a
+real mod in play, and none of the core's tests with the game (`-g`) on
+this build; a mod larger than a few hundred bytes; Windows, macOS and
+aarch64. The no-mods digests were measured on x86_64; that test is skipped
+on aarch64.
+
 ## Not done
 
 - Other releases' data (Steam, consoles, Sonic Origins Plus): not tried.
 - The engine's v3 and v4 modes (v5U plays those games' data too, as Sonic
   Origins does) are built in but were not made to work: the v3 test game
   showed a black screen. The rsdkv3 and rsdkv4 cores play those games.
-- Mods: the mod loader is off.
+- Mods with compiled code of their own (a LogicFile): refused (above).
+- Mods with Sonic Mania itself: not tried; the data file was not at hand
+  when the mod loader was turned on (2026-11-15).

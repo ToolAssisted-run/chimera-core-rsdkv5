@@ -35,12 +35,23 @@ Emulator > Export Save Data gives the files the game saved, such as
 SaveData.bin. A project takes them back in its Save data slot, under those
 names.
 
+## Mods
+
+A project's Mods slot takes mods for the decompilation's mod loader: zips of
+mod folders, each with its mod.ini. They are loaded at power-on, in the
+slot's order (where two mods have the same file, the first one's is used),
+and are part of the machine, so a movie made with mods replays with the same
+mods. Mods made of data files work; a mod with its own compiled code (a
+LogicFile in its mod.ini) is refused, as it cannot run in the sandbox. What a
+mod writes stays in the machine. Nothing is downloaded.
+[docs/PLAN.md](docs/PLAN.md) has the details.
+
 ## What it does not do yet
 
 - The Plus content (the Plus title, Encore mode, Mighty and Ray) is off
   unless the project turns its Plus Content setting on, as the engine
   decompilation's licence requires (a setting off by default).
-- Mods (the decompilation's mod loader) are off.
+- Mods with compiled code of their own (a LogicFile) are refused.
 
 [docs/PLAN.md](docs/PLAN.md) says what was decided and measured,
 [docs/BUILDING.md](docs/BUILDING.md) how to build and test it.

@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1, bir Retro Engine veri dosyası değil: %2 bayt uzunluğunda.",
 		"error.is_not_a_retro_engine_v5": "%1, bir Retro Engine v5 veri dosyası değil (RSDKv5 ile başlamıyor)",
 		"error.is_too_large_bytes_for_the": "%1 çekirdeğin belleği için çok büyük (%2 bayt).",
+		"error.mod_needs_native_code": "%1 modu (%2 içinde) kendi derlenmiş koduna (%3) ihtiyaç duyuyor; bu kod çekirdeğin korumalı alanında çalışamaz. Yalnızca veri dosyalarından oluşan modlar kullanılabilir.",
+		"error.mod_wrong_engine": "%1 modu (%2 içinde) Retro Engine'in %3 sürümü içindir; Sonic Mania'yı çalıştıran 5 sürümü için değil.",
+		"error.mods_could_not_be_read": "%1 tamamen okunamadı: zip bozuk.",
+		"error.mods_no_mod_ini": "%1 hiç mod içermiyor: içindeki hiçbir klasörde mod.ini yok.",
+		"error.mods_not_zip": "%1 bir zip değil: modlar, her biri kendi mod.ini dosyasına sahip mod klasörlerinden oluşan bir zip olarak verilir.",
+		"error.mods_same_folder": "İki modun adı %1 (ikincisi %2 içinde): her modun kendine ait bir klasör adı olmalı.",
+		"error.mods_too_large": "Modlar açıldığında %1 MiB tutuyor; bu, çekirdeğin belleğine sığandan fazla.",
 		"error.save_data_could_not_be": "Kayıt verisi %1 açılamadı.",
 		"error.save_data_has_more_than": "Kayıt verisinde %1 dosyadan fazlası var.",
 		"error.save_data_is_not_one_this": "Kayıt verisi %1, bu çekirdeğin kabul ettiği bir dosya değil: Settings.ini projenin ayarlarıdır ve bir ad en çok %2 karakter olabilir.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "Ekranın kaç piksel genişliğinde olduğu (motorun pixWidth ayarı). 424, upstream'in varsayılanıdır; 16:9 bir ekran. 320, 4:3 bir ekran. Genişlik oyuncunun ne kadar ileriyi gördüğünü ve hangi nesnelerin uyanık olduğunu değiştirir; bu yüzden oyunu değiştirir ve bir film bunu kaydeder.",
 		"setting.username": "Oyuncu adı",
 		"setting.username.about": "Oyunun gösterdiği oyuncu adı (motorun ayar dosyasındaki username). Boş bırakılırsa oyunun kendi varsayılanı kullanılır. Satır sonları, parantezler ve noktalı virgüller çıkarılır; en çok 31 karakter.",
+		"slot.mods": "Modlar",
+		"slot.mods.help": "Dekompilasyonun mod yükleyicisi için modlar: istediğiniz kadar zip; her birinde mod.ini dosyasıyla bir veya daha fazla mod klasörü bulunur (kökünde mod.ini olan bir zip, zip'in adını taşıyan tek bir moddur). Oyun başlarken bu listedeki sırayla yüklenirler ve makinenin parçasıdırlar: modlarla yapılan bir film, oynatılmak için aynı modlara ihtiyaç duyar. İki modda aynı dosya varsa listede daha yukarıdakinin dosyası kullanılır. Veri dosyalarından oluşan modlar çalışır; kendi derlenmiş kodu olan bir mod (mod.ini dosyasında bir LogicFile) çekirdeğin korumalı alanında çalışamaz ve reddedilir. Bir modun yazdıkları makinenin içinde kalır. Hiçbir şey indirilmez. Mod istemiyorsanız boş bırakın.",
 		"slot.savedata": "Kayıt verisi",
 		"slot.savedata.help": "Oyunun yazdığı dosyalar, Emulator > Export Save Data'nın verdiği gibi: SaveData.bin (kayıt dosyalarının ilerlemesi) ve oyunun kendi adlarıyla tuttuğu başka dosyalar. Oyun başlamadan önce yerlerine konurlar, böylece oyun onları kendininmiş gibi bulur."
 	}

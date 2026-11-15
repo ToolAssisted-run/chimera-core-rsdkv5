@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1 không phải là tệp dữ liệu Retro Engine: nó dài %2 byte.",
 		"error.is_not_a_retro_engine_v5": "%1 không phải là tệp dữ liệu Retro Engine v5 (nó không bắt đầu bằng RSDKv5)",
 		"error.is_too_large_bytes_for_the": "%1 quá lớn (%2 byte) so với bộ nhớ của lõi.",
+		"error.mod_needs_native_code": "Mod %1 (trong %2) cần mã biên dịch riêng (%3), vốn không thể chạy trong hộp cát của lõi. Chỉ dùng được các mod gồm tệp dữ liệu.",
+		"error.mod_wrong_engine": "Mod %1 (trong %2) dành cho Retro Engine phiên bản %3, không phải phiên bản 5 chạy Sonic Mania.",
+		"error.mods_could_not_be_read": "Không thể đọc trọn %1: tệp zip bị hỏng.",
+		"error.mods_no_mod_ini": "%1 không chứa mod nào: không thư mục nào trong đó có mod.ini.",
+		"error.mods_not_zip": "%1 không phải tệp zip: mod được cung cấp dưới dạng zip gồm các thư mục mod, mỗi thư mục có mod.ini riêng.",
+		"error.mods_same_folder": "Có hai mod tên là %1 (mod thứ hai trong %2): mỗi mod cần một tên thư mục riêng.",
+		"error.mods_too_large": "Các mod khi giải nén chiếm %1 MiB, nhiều hơn bộ nhớ của lõi có thể chứa.",
 		"error.save_data_could_not_be": "Không mở được dữ liệu lưu %1.",
 		"error.save_data_has_more_than": "Dữ liệu lưu có nhiều hơn %1 tệp.",
 		"error.save_data_is_not_one_this": "Dữ liệu lưu %1 không phải là loại lõi này nhận: Settings.ini là cài đặt của dự án, và tên dài tối đa %2 ký tự.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "Màn hình rộng bao nhiêu điểm ảnh (cài đặt pixWidth của engine). 424 là mặc định của upstream, màn hình 16:9; 320 là màn hình 4:3. Chiều rộng thay đổi tầm nhìn của người chơi và các đối tượng nào được đánh thức, nên nó thay đổi game, và bản ghi hình lưu lại nó.",
 		"setting.username": "Tên người chơi",
 		"setting.username.about": "Tên người chơi như game hiển thị (username trong tệp cài đặt của engine). Để trống thì dùng mặc định của game. Các ngắt dòng, dấu ngoặc và dấu chấm phẩy bị bỏ đi; tối đa 31 ký tự.",
+		"slot.mods": "Mod",
+		"slot.mods.help": "Mod cho trình nạp mod của bản dịch ngược: bao nhiêu tệp zip cũng được, mỗi tệp chứa một hoặc nhiều thư mục mod kèm mod.ini của chúng (tệp zip có mod.ini ở gốc là một mod, mang tên tệp zip). Chúng được nạp khi trò chơi bắt đầu, theo thứ tự của danh sách này, và là một phần của máy: phim làm với mod cần đúng các mod đó để phát lại. Khi hai mod có cùng một tệp, tệp của mod nằm cao hơn trong danh sách được dùng. Mod gồm các tệp dữ liệu hoạt động được; mod có mã biên dịch riêng (một LogicFile trong mod.ini) không thể chạy trong hộp cát của lõi và bị từ chối. Những gì mod ghi ra vẫn ở trong máy. Không có gì được tải xuống. Để trống nếu không dùng mod nào.",
 		"slot.savedata": "Dữ liệu lưu",
 		"slot.savedata.help": "Các tệp mà game đã ghi, như Emulator > Export Save Data đã xuất: SaveData.bin (tiến độ của các tệp lưu) và mọi tệp khác mà game giữ, dùng đúng tên của chúng. Chúng được đặt vào đúng chỗ trước khi game bắt đầu, nên game thấy chúng như của chính nó."
 	}

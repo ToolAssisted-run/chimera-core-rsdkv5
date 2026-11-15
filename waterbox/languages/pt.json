@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1 não é um arquivo de dados do Retro Engine: tem %2 bytes.",
 		"error.is_not_a_retro_engine_v5": "%1 não é um arquivo de dados do Retro Engine v5 (não começa com RSDKv5)",
 		"error.is_too_large_bytes_for_the": "%1 é grande demais (%2 bytes) para a memória do núcleo.",
+		"error.mod_needs_native_code": "O mod %1 (em %2) precisa de código compilado próprio (%3), que não pode ser executado no ambiente isolado do núcleo. Só podem ser usados mods feitos de ficheiros de dados.",
+		"error.mod_wrong_engine": "O mod %1 (em %2) é para a versão %3 do Retro Engine, não para a versão 5, que executa Sonic Mania.",
+		"error.mods_could_not_be_read": "Não foi possível ler %1 por inteiro: o zip está danificado.",
+		"error.mods_no_mod_ini": "%1 não contém nenhum mod: nenhuma pasta nele tem um mod.ini.",
+		"error.mods_not_zip": "%1 não é um zip: os mods são dados como um zip de pastas de mod, cada uma com o seu mod.ini.",
+		"error.mods_same_folder": "Há dois mods chamados %1 (o segundo em %2): cada mod precisa de um nome de pasta próprio.",
+		"error.mods_too_large": "Os mods ocupam %1 MiB descomprimidos, mais do que cabe na memória do núcleo.",
 		"error.save_data_could_not_be": "Os dados salvos %1 não puderam ser abertos.",
 		"error.save_data_has_more_than": "Os dados salvos têm mais de %1 arquivos.",
 		"error.save_data_is_not_one_this": "Os dados salvos %1 não são um que este núcleo aceita: Settings.ini são as configurações do projeto, e um nome tem no máximo %2 caracteres.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "Quantos pixels de largura tem a tela (a configuração pixWidth do motor). 424 é o padrão do projeto original, uma tela 16:9; 320 é uma 4:3. A largura muda até onde o jogador enxerga à frente e quais objetos estão ativos, por isso altera o jogo, e um filme a grava.",
 		"setting.username": "Nome do jogador",
 		"setting.username.about": "O nome do jogador como o jogo o mostra (username no arquivo de configurações do motor). Vazio é o padrão do próprio jogo. Quebras de linha, colchetes e ponto e vírgula são retirados; no máximo 31 caracteres.",
+		"slot.mods": "Mods",
+		"slot.mods.help": "Mods para o carregador de mods da decompilação: quantos zips quiser, cada um com uma ou mais pastas de mod com o seu mod.ini (um zip com mod.ini na raiz é um só mod, com o nome do zip). São carregados quando o jogo começa, pela ordem desta lista, e fazem parte da máquina: um filme feito com mods precisa dos mesmos mods para ser reproduzido. Quando dois mods têm o mesmo ficheiro, usa-se o que está mais acima na lista. Os mods feitos de ficheiros de dados funcionam; um mod com código compilado próprio (um LogicFile no seu mod.ini) não pode ser executado no ambiente isolado do núcleo e é recusado. O que um mod escreve fica dentro da máquina. Nada é transferido. Deixe vazio para nenhum.",
 		"slot.savedata": "Dados salvos",
 		"slot.savedata.help": "Os arquivos que o jogo gravou, como os deu Emulador > Exportar dados salvos: SaveData.bin (o progresso dos arquivos de save) e quaisquer outros que o jogo mantenha, com os nomes deles. Eles são colocados no lugar antes de o jogo começar, para que ele os encontre como seus."
 	}

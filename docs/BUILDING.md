@@ -59,8 +59,12 @@ CHIMERA_CORES_DIR=<folder with the package> <chimera>/build/meson-linux/source/u
 
 The game's logic is compiled into the core, so there is no test game:
 without `-g`, `run-gate.sh` runs only the tests that need no game (the
-refusals, the clock, the firmware name), and `run-frontend.sh` without the
-data file only builds the package. With the data file they play 5200 and
+refusals, the clock, the firmware name, and the mods tests, on a data file
+and mods of their own that `tests/make-mods.py` writes), and
+`run-frontend.sh` without the data file builds the package and runs a
+project with those mods through chimera-run. The mods tests use strace
+when it is installed (to see that nothing is written on the disk) and skip
+that one test when it is not. With the data file they play 5200 and
 5500 frames from power-on through the title, the menus, the opening video and
 the Angel Island opening into Green Hill. Keep the data file outside the
 repository, or in `tests/roms-local/` (`run-frontend.sh` looks there), which

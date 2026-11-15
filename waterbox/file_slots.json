@@ -1,5 +1,5 @@
 {
-  "_comment": "This file lists the kinds of file a project of this core can hold. A Sonic Mania project supplies the game's data file as firmware (Data.rsdk, in waterbox.config); the one slot is the game's saves.",
+  "_comment": "This file lists the kinds of file a project of this core can hold. A Sonic Mania project supplies the game's data file as firmware (Data.rsdk, in waterbox.config); the slots are the game's saves and the mods for the decompilation's mod loader (any number of zips of mod folders, which become part of the machine).",
   "slots": [
     {
       "id": "savedata",
@@ -10,6 +10,16 @@
         "bin"
       ],
       "help": "slot.savedata.help"
+    },
+    {
+      "id": "mods",
+      "title": "slot.mods",
+      "min": 0,
+      "max": -1,
+      "formats": [
+        "zip"
+      ],
+      "help": "slot.mods.help"
     }
   ]
 }

@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1 ist keine Datendatei der Retro Engine: Sie ist %2 Byte lang.",
 		"error.is_not_a_retro_engine_v5": "%1 ist keine Datendatei der Retro Engine v5 (sie beginnt nicht mit RSDKv5)",
 		"error.is_too_large_bytes_for_the": "%1 ist zu groß (%2 Byte) für den Speicher des Cores.",
+		"error.mod_needs_native_code": "Der Mod %1 (in %2) braucht eigenen kompilierten Code (%3), der in der Sandbox des Cores nicht laufen kann. Nur Mods aus Datendateien sind möglich.",
+		"error.mod_wrong_engine": "Der Mod %1 (in %2) ist für Version %3 der Retro Engine, nicht für Version 5, die Sonic Mania spielt.",
+		"error.mods_could_not_be_read": "%1 konnte nicht ganz gelesen werden: Das Zip ist beschädigt.",
+		"error.mods_no_mod_ini": "%1 enthält keinen Mod: kein Ordner darin hat eine mod.ini.",
+		"error.mods_not_zip": "%1 ist kein Zip: Mods werden als Zip von Mod-Ordnern gegeben, jeder mit seiner mod.ini.",
+		"error.mods_same_folder": "Zwei Mods heißen %1 (der zweite in %2): Jeder Mod braucht einen eigenen Ordnernamen.",
+		"error.mods_too_large": "Die Mods sind entpackt %1 MiB groß, mehr als im Speicher des Cores Platz hat.",
 		"error.save_data_could_not_be": "Die Speicherdaten %1 konnten nicht geöffnet werden.",
 		"error.save_data_has_more_than": "Die Speicherdaten enthalten mehr als %1 Dateien.",
 		"error.save_data_is_not_one_this": "Die Speicherdaten %1 sind keine, die dieser Core annimmt: Settings.ini sind die Einstellungen des Projekts, und ein Name darf höchstens %2 Zeichen haben.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "Wie viele Pixel der Bildschirm breit ist (die Einstellung pixWidth der Engine). 424 ist der Standard des Originals, ein 16:9-Bildschirm; 320 ein 4:3-Bildschirm. Die Breite ändert, wie weit der Spieler vorausschaut und welche Objekte aktiv sind. Sie verändert also das Spiel, und ein Film speichert sie.",
 		"setting.username": "Spielername",
 		"setting.username.about": "Der Name des Spielers, wie ihn das Spiel zeigt (username in der Einstellungsdatei der Engine). Leer ist der Standard des Spiels. Zeilenumbrüche, Klammern und Semikolons werden weggelassen; höchstens 31 Zeichen.",
+		"slot.mods": "Mods",
+		"slot.mods.help": "Mods für den Mod-Lader der Dekompilierung: beliebig viele Zips, jedes mit einem oder mehreren Mod-Ordnern samt mod.ini (ein Zip mit mod.ini im Stamm ist ein Mod, benannt wie das Zip). Sie werden beim Spielstart in der Reihenfolge dieser Liste geladen und gehören zur Maschine: Ein mit Mods aufgenommener Film braucht zum Abspielen dieselben Mods. Haben zwei Mods dieselbe Datei, gilt die des weiter oben stehenden. Mods aus Datendateien funktionieren; ein Mod mit eigenem kompiliertem Code (ein LogicFile in seiner mod.ini) kann in der Sandbox des Cores nicht laufen und wird abgelehnt. Was ein Mod schreibt, bleibt in der Maschine. Es wird nichts heruntergeladen. Leer lassen für keine.",
 		"slot.savedata": "Speicherdaten",
 		"slot.savedata.help": "Die Dateien, die das Spiel geschrieben hat, wie sie Emulator > Speicherdaten exportieren gegeben hat: SaveData.bin (der Fortschritt der Speicherdateien) und alle anderen, die das Spiel unter ihren eigenen Namen führt. Sie werden vor dem Spielstart an ihren Platz gelegt, so findet das Spiel sie als seine eigenen."
 	}

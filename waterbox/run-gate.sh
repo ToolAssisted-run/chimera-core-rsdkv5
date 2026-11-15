@@ -13,6 +13,15 @@
 #   clock        the guest has no time() of its own: the one it calls is the
 #                core's (the setting)
 #   firmware     waterbox.config's firmware is the file the core opens
+#   mods         the project's mods (chimera#590), on the tests' own data
+#                file and mods (tests/make-mods.py): a mod's file replaces
+#                the data file's; the slot's order, and a zip's own
+#                modconfig.ini; the refusals (compiled code, another engine
+#                version, no mod.ini, no zip, one folder name twice); what
+#                the mod loader writes stays in the machine and nothing is
+#                written on the disk; native = sandbox = a state around
+#                every frame = a state carried into a new host; with no
+#                mods, the digests of the commit before
 #
 # With the game (-g <Data.rsdk>), on a route from power-on: Start on the
 # title, A on Mania Mode, A on No Save, then right and a jump through the
@@ -121,6 +130,135 @@ if [ "$fw" = "Data.rsdk" ] && grep -q 'const char \*name = "Data.rsdk";' "$here/
 	pass "firmware: waterbox.config's one firmware, Data.rsdk, is the name the core opens"
 else
 	fail "firmware: waterbox.config declares '$fw'"
+fi
+
+# The project's mods (chimera#590), on the tests' own content
+# (tests/make-mods.py): a data file whose one file, GameConfig.bin, holds the
+# game's title and version, and mods that replace it. The engine runs it with
+# nothing to play; with the Developer Menu setting on, Dev Menu (frame 10)
+# opens the engine's developer menu, which draws the title and the version,
+# so what a mod changes is in the picture (tailVideoHash: the last frame's).
+echo "== mods"
+mods="$work/mods"
+mkdir -p "$mods"
+python3 -I "$here/tests/make-mods.py" "$mods/src"
+modset() { # modset <tag> <the slot as JSON, or nothing>: a work dir with the data file and the mods
+	mkdir -p "$mods/$1"
+	cp "$mods/src/Data.rsdk" "$mods/$1/"
+	printf '{"devMenu": true}' > "$mods/$1/settings"
+	if [ -n "$2" ]; then
+		for z in $(printf '%s' "$2" | tr -d '[]",'); do cp "$mods/src/$z" "$mods/$1/"; done
+		printf '{"mods": %s}' "$2" > "$mods/$1/slots"
+	fi
+}
+menu="--frames 60 --press 10:E:2"
+for m in none:"" alpha:'["alpha.zip"]' beta:'["beta.zip"]' ab:'["alpha.zip", "beta.zip"]' ba:'["beta.zip", "alpha.zip"]' \
+	pair:'["pair.zip"]' byname:'["pairbyname.zip"]' xml:'["xml.zip"]'; do
+	modset "${m%%:*}" "${m#*:}"
+	# shellcheck disable=SC2086
+	"$native" "$mods/${m%%:*}" $menu > "$mods/${m%%:*}.n" 2>/dev/null || true
+done
+tail_of() { value "$mods/$1.n" tailVideoHash; }
+if [ -z "$(tail_of none)" ] || [ "$(tail_of alpha)" = "$(tail_of none)" ] || [ "$(tail_of beta)" = "$(tail_of none)" ] ||
+   [ "$(tail_of alpha)" = "$(tail_of beta)" ] || [ "$(tail_of xml)" = "$(tail_of none)" ] || [ "$(tail_of xml)" = "$(tail_of alpha)" ]; then
+	fail "mods: a mod does not change the developer menu (none $(tail_of none), alpha $(tail_of alpha), beta $(tail_of beta), xml $(tail_of xml))"
+else
+	pass "mods: alpha.zip's GameConfig.bin replaces the data file's (the developer menu draws ALPHA MOD for CHIMERA PACK), beta.zip's another, and xml.zip's Game.xml retitles the data file's game (XML MOD)"
+fi
+# shellcheck disable=SC2086
+"$wbx" "$core" "$mods/ab" $menu > "$mods/ab.w" 2>/dev/null || true
+if [ "$(tail_of ab)" = "$(tail_of alpha)" ] && [ "$(tail_of ba)" = "$(tail_of beta)" ] &&
+   [ "$(tail_of pair)" != "$(tail_of byname)" ] && [ -n "$(tail_of pair)" ]; then
+	pass "mods: order - alpha then beta draws alpha's title, beta then alpha beta's (the first in the slot has the file); in one zip its modconfig.ini's order (Two first), else by name (One first)"
+	same mods "$mods/ab.w" "$mods/ab.n" "two mods: native = sandbox"
+else
+	fail "mods: order - alpha,beta $(tail_of ab) (alpha $(tail_of alpha)); beta,alpha $(tail_of ba) (beta $(tail_of beta)); pair $(tail_of pair), by name $(tail_of byname)"
+fi
+
+for m in native wrong nomod notzip; do modset "$m" "[\"$m.zip\"]"; done
+modset twice '["alpha.zip", "alpha.zip"]'
+refuse mods/native "error.mod_needs_native_code.Native.native.zip.NativeMod.dll" "a mod with compiled code (Native, its LogicFile NativeMod.dll)"
+refuse mods/wrong "error.mod_wrong_engine.Old.wrong.zip.4" "a mod for version 4 of the engine"
+refuse mods/nomod "error.mods_no_mod_ini.nomod.zip" "a zip with no mod.ini"
+refuse mods/notzip "error.mods_not_zip.notzip.zip" "a file that is not a zip"
+refuse mods/twice "error.mods_same_folder.Alpha.alpha.zip" "two mods with one folder name"
+
+# The mod loader writes: alpha's ConfigFile makes it write modConfig.cfg into
+# alpha's folder as it loads, and on the developer menu's Mods page A turns
+# alpha off, B goes back (the engine writes modconfig.ini) and Resume
+# restarts the game, which reads modconfig.ini again: the title is then
+# beta's, as with beta first, only if what it wrote was read back. All of it
+# in the machine's memory: the processes open nothing on the disk to write
+# but the harness's own outputs, and Export Save Data holds none of it.
+toggle="--frames 240 --press 10:E:2 --press 20:D:2 --press 30:D:2 --press 40:D:2 --press 50:D:2 --press 60:A:2 --press 70:A:2 --press 80:B:2"
+toggle="$toggle --press 90:U:2 --press 100:U:2 --press 110:U:2 --press 120:U:2 --press 130:A:2 --press 200:E:2"
+mkdir -p "$mods/out"
+# shellcheck disable=SC2086
+"$native" "$mods/ba" --frames 240 --press 200:E:2 --screenshot 239:"$mods/out.ba.tga" > /dev/null 2>&1 || true
+# shellcheck disable=SC2086
+"$native" "$mods/ab" $toggle --savedata-out "$mods/out" --screenshot 239:"$mods/out.toggle.tga" > "$mods/export.n" 2>/dev/null || true
+if [ ! -s "$mods/out.ba.tga" ] || ! cmp -s "$mods/out.toggle.tga" "$mods/out.ba.tga"; then
+	fail "mods: what the mod loader wrote was not read back: alpha off, the restarted game's title is not beta's"
+elif grep -q '^savedata\[' "$mods/export.n" || [ -n "$(ls -A "$mods/out" 2>/dev/null)" ]; then
+	fail "mods: Export Save Data gives the mod loader's files: $(grep '^savedata\[' "$mods/export.n" | head -3 | tr '\n' ' ')"
+else
+	pass "mods: the mod loader's modconfig.ini written and read back in the machine (alpha off, the restarted game draws beta's title); Export Save Data holds none of what the mod loader wrote"
+fi
+if command -v strace > /dev/null 2>&1; then
+	calls=open,openat,creat,mkdir,mkdirat,unlink,unlinkat,rename,renameat,renameat2,truncate,link,symlink
+	# shellcheck disable=SC2086
+	strace -f -o "$mods/strace.n" -e trace=$calls "$native" "$mods/ab" $toggle --screenshot 239:"$mods/out.toggle.tga" > /dev/null 2>&1 || true
+	# shellcheck disable=SC2086
+	strace -f -o "$mods/strace.w" -e trace=$calls "$wbx" "$core" "$mods/ab" $toggle > /dev/null 2>&1 || true
+	written="$(cat "$mods/strace.n" "$mods/strace.w" | grep -E 'O_WRONLY|O_RDWR|O_CREAT|O_TRUNC|mkdir|unlink|rename|truncate|link\(' |
+		grep -v -e "$mods/out" | head -3)"
+	if [ ! -s "$mods/strace.n" ] || [ ! -s "$mods/strace.w" ] || [ -n "$written" ]; then
+		fail "mods: written on the disk: ${written:-no trace}"
+	else
+		pass "mods: the Mods page route (alpha's modConfig.cfg and the engine's modconfig.ini written) opens nothing on the disk to write, and makes, removes or renames nothing, in either build"
+	fi
+else
+	echo "SKIP mods: nothing written on the disk - strace is not installed"
+fi
+rm -f "$mods/out.toggle.tga" "$mods/out.ba.tga"
+# shellcheck disable=SC2086
+"$native" "$mods/ab" $toggle > "$mods/toggle.n" 2>/dev/null || true
+# shellcheck disable=SC2086
+"$wbx" "$core" "$mods/ab" $toggle > "$mods/toggle.w" 2>/dev/null || true
+same mods "$mods/toggle.w" "$mods/toggle.n" "the Mods page route (240 frames, alpha turned off, the game restarted): native = sandbox"
+# shellcheck disable=SC2086
+"$wbx" "$core" "$mods/ab" $toggle --rerecord > "$mods/toggle.r" 2>/dev/null || true
+same mods "$mods/toggle.r" "$mods/toggle.w" "the Mods page route: a state saved and loaded before every frame = straight"
+for s in 75 100 150; do
+	# shellcheck disable=SC2086
+	"$wbx" "$core" "$mods/ab" $toggle --session-at $s > "$mods/toggle.s$s" 2>/dev/null || true
+	same mods "$mods/toggle.s$s" "$mods/toggle.w" "the Mods page route: saved at frame $s, loaded into a new host = straight"
+done
+
+# Without mods the machine is the one before the mod loader was built in:
+# the digests of the commit before (measured on x86_64, native and sandbox
+# alike), on a route through the developer menu, with the setting on and off
+if [ "$(uname -m)" = x86_64 ]; then
+	nomods="--frames 300 --press 10:E:2 --press 40:D:2 --press 70:D:2 --press 100:A:2 --press 160:B:2"
+	modset plain ""
+	rm -f "$mods/plain/settings"
+	before_dm="a70fc1b65a16e75b 5dfaf0d5bf650deb fb16e85c6c1d2b43 9a7012bb1116e0ce 1 300 d21ebf1928eae53e 3b83ee4d02793243"
+	before_plain="bc6fe5c1bd497423 4b2a724d81031c73 fb16e85c6c1d2b43 9a7012bb1116e0ce 1 300 bca60106ec2ff973 3b83ee4d02793243"
+	keyed() { for k in videoHash tailVideoHash audioHash stepsHash lagFrames clock 'domain\[Game State\]' 'domain\[Players\]'; do value "$1" "$k"; done | tr '\n' ' ' | sed 's/ $//'; }
+	for t in none plain; do
+		# shellcheck disable=SC2086
+		"$native" "$mods/$t" $nomods > "$mods/$t.before.n" 2>/dev/null || true
+		# shellcheck disable=SC2086
+		"$wbx" "$core" "$mods/$t" $nomods > "$mods/$t.before.w" 2>/dev/null || true
+	done
+	if [ "$(keyed "$mods/none.before.n")" = "$before_dm" ] && [ "$(keyed "$mods/none.before.w")" = "$before_dm" ] &&
+	   [ "$(keyed "$mods/plain.before.n")" = "$before_plain" ] && [ "$(keyed "$mods/plain.before.w")" = "$before_plain" ]; then
+		pass "mods: none given - picture, sound, frames, lag and memory are the commit before's, with the developer menu (its Mods entry absent) and without; both builds"
+	else
+		fail "mods: none given, not the commit before's: menu [$(keyed "$mods/none.before.n")] [$(keyed "$mods/none.before.w")], plain [$(keyed "$mods/plain.before.n")] [$(keyed "$mods/plain.before.w")]"
+	fi
+else
+	echo "SKIP mods: none given = the commit before - its digests were measured on x86_64"
 fi
 
 if [ -n "$game" ]; then

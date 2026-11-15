@@ -71,6 +71,9 @@ $(B)/rsdk/%.o: $(RSDK)/%.cpp $(PATCH_STAMP) $(INC_DIR)/SDL2/.stamp $(B)/flags | 
 	@mkdir -p $(dir $@)
 	$(CXX) $(RSDK_CXXFLAGS) -c -o $@ $<
 
+# the mod loader answers its folder questions with the core's mod-fs.hpp
+$(B)/rsdk/RSDKv5/RSDK/Core/ModAPI.o: mod-fs.hpp rsdk-driver.h
+
 $(B)/mania/%.o: $(MANIA)/%.c $(B)/flags | $(SR)/lib/libstdc++.a
 	@mkdir -p $(dir $@)
 	$(CC) $(MANIA_CFLAGS) -c -o $@ $<

@@ -16,14 +16,16 @@ data file is never in the repository or the package: the user provides it.
 - `waterbox/sources.mk`: the sources, defines and link wraps both builds
   share. `native.mk`, `guest.mk`: the two builds.
 - `waterbox/rsdk-driver.cpp`: the machine (a frame, the sound, the picture).
-  `rsdk-files.c`: every file the engine opens. `seams.c`: what SDL is
+  `rsdk-files.c`: every file the engine opens, the project's mods among
+  them; `mod-fs.hpp`: the mod loader's folder questions, answered from them. `seams.c`: what SDL is
   answered with. `detmath.c`: the math functions. `game-state.cpp`: the
   memory domains and properties; `mania-state.c`: where Sonic Mania keeps a
   player's rings, lives and score, from the game's own headers. `wbx-entry.c`: the guest's exports.
 - `waterbox/waterbox.config`, `file_slots.json`, `default_keybinds.json`,
   `package-licenses.json`: the declarations.
 - `waterbox/run-gate.sh`: the core's tests. `waterbox/tests/`: the frontend
-  tests. There is no test game: the game's logic is compiled in.
+  tests, and `make-mods.py`, the mods tests' own data file and mods. There is
+  no test game: the game's logic is compiled in.
 - `build/`: every output. `tests/roms-local/`: game data, ignored by git.
 
 ## Commands, in order

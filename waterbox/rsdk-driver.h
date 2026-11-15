@@ -102,6 +102,15 @@ const char *rsdk_saves_name(int index);
 int64_t rsdk_saves_size(int index);
 const uint8_t *rsdk_saves_data(int index);
 
+/* The project's mods (the Mods slot, chimera#590), unpacked at Init into a
+ * "mods" folder that exists only in the machine's memory, for the engine's
+ * own mod loader (mod-fs.hpp, patches/0003). A path is a file, a folder or
+ * nothing; a folder's entries are its files and folders, or with recursive
+ * every file under it, each named as the folder's path, a slash and the rest. */
+enum { RSDK_MODS_NONE, RSDK_MODS_FILE, RSDK_MODS_FOLDER };
+int rsdk_mods_kind(const char *path);
+void rsdk_mods_list(const char *dir, int recursive, void (*each)(void *user, const char *name, int folder), void *user);
+
 #ifdef __cplusplus
 }
 #endif

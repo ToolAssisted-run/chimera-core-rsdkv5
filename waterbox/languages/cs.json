@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1 není datový soubor Retro Engine: má %2 bajtů.",
 		"error.is_not_a_retro_engine_v5": "%1 není datový soubor Retro Engine v5 (nezačíná na RSDKv5)",
 		"error.is_too_large_bytes_for_the": "%1 je příliš velký (%2 bajtů) na paměť jádra.",
+		"error.mod_needs_native_code": "Mod %1 (v %2) potřebuje vlastní zkompilovaný kód (%3), který v izolovaném prostředí jádra běžet nemůže. Použít lze jen mody z datových souborů.",
+		"error.mod_wrong_engine": "Mod %1 (v %2) je pro verzi %3 Retro Engine, ne pro verzi 5, na které běží Sonic Mania.",
+		"error.mods_could_not_be_read": "%1 nelze přečíst celý: zip je poškozený.",
+		"error.mods_no_mod_ini": "%1 neobsahuje žádný mod: žádná složka v něm nemá mod.ini.",
+		"error.mods_not_zip": "%1 není zip: mody se zadávají jako zip složek modů, každá se svým mod.ini.",
+		"error.mods_same_folder": "Dva mody se jmenují %1 (druhý v %2): každý mod potřebuje vlastní název složky.",
+		"error.mods_too_large": "Mody mají po rozbalení %1 MiB, víc, než se vejde do paměti jádra.",
 		"error.save_data_could_not_be": "Uložená data %1 nelze otevřít.",
 		"error.save_data_has_more_than": "Uložená data mají více než %1 souborů.",
 		"error.save_data_is_not_one_this": "Uložená data %1 nejsou jedna z těch, které toto jádro přijme: Settings.ini je nastavení projektu a jméno má nejvýše %2 znaků.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "Kolik pixelů je obrazovka široká (nastavení pixWidth enginu). 424 je výchozí hodnota upstreamu, obrazovka 16:9; 320 je obrazovka 4:3. Šířka mění, jak daleko hráč vidí a které objekty jsou aktivní, takže mění hru a záznam ji zaznamená.",
 		"setting.username": "Jméno hráče",
 		"setting.username.about": "Jméno hráče, jak ho hra zobrazuje (username v nastavení enginu). Prázdné je výchozí hodnota hry. Zalomení řádků, závorky a středníky se vynechají; nejvýše 31 znaků.",
+		"slot.mods": "Mody",
+		"slot.mods.help": "Mody pro zavaděč modů dekompilace: libovolný počet zipů, každý s jednou či více složkami modů s jejich mod.ini (zip s mod.ini v kořeni je jeden mod pojmenovaný podle zipu). Načtou se při spuštění hry v pořadí tohoto seznamu a jsou součástí stroje: film nahraný s mody potřebuje k přehrání stejné mody. Mají-li dva mody stejný soubor, použije se ten výše v seznamu. Mody z datových souborů fungují; mod s vlastním zkompilovaným kódem (LogicFile v jeho mod.ini) nemůže běžet v izolovaném prostředí jádra a je odmítnut. Co mod zapíše, zůstává uvnitř stroje. Nic se nestahuje. Nechte prázdné, nechcete-li žádné.",
 		"slot.savedata": "Uložená data",
 		"slot.savedata.help": "Soubory, které hra zapsala, tak jak je Emulátor > Exportovat uložená data dal: SaveData.bin (postup souborů uložených her) a jakékoli další, které hra uchovává, pod jejich vlastními jmény. Před startem hry se umístí na místo, aby je hra našla jako svá."
 	}

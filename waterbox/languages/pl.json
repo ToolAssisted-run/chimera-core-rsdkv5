@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1 nie jest plikiem danych Retro Engine: ma %2 bajtów.",
 		"error.is_not_a_retro_engine_v5": "%1 nie jest plikiem danych Retro Engine v5 (nie zaczyna się od RSDKv5)",
 		"error.is_too_large_bytes_for_the": "%1 jest za duży (%2 bajtów) na pamięć rdzenia.",
+		"error.mod_needs_native_code": "Mod %1 (w %2) wymaga własnego skompilowanego kodu (%3), który nie może działać w piaskownicy rdzenia. Można używać tylko modów złożonych z plików danych.",
+		"error.mod_wrong_engine": "Mod %1 (w %2) jest dla wersji %3 Retro Engine, a nie dla wersji 5, na której działa Sonic Mania.",
+		"error.mods_could_not_be_read": "Nie udało się odczytać całego %1: zip jest uszkodzony.",
+		"error.mods_no_mod_ini": "%1 nie zawiera żadnego moda: żaden folder w nim nie ma mod.ini.",
+		"error.mods_not_zip": "%1 nie jest plikiem zip: mody podaje się jako zip folderów modów, każdy z własnym mod.ini.",
+		"error.mods_same_folder": "Dwa mody nazywają się %1 (drugi w %2): każdy mod potrzebuje własnej nazwy folderu.",
+		"error.mods_too_large": "Mody po rozpakowaniu zajmują %1 MiB, więcej, niż mieści pamięć rdzenia.",
 		"error.save_data_could_not_be": "Nie można otworzyć danych zapisu %1.",
 		"error.save_data_has_more_than": "Dane zapisu mają więcej niż %1 plików.",
 		"error.save_data_is_not_one_this": "Dane zapisu %1 nie są takie, jakie przyjmuje ten rdzeń: Settings.ini to ustawienia projektu, a nazwa ma najwyżej %2 znaków.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "Szerokość ekranu w pikselach (ustawienie pixWidth silnika). 424 to domyślna wartość upstream, ekran 16:9; 320 to ekran 4:3. Szerokość zmienia, jak daleko widzi gracz i które obiekty są aktywne, więc zmienia grę, a nagranie ją zapisuje.",
 		"setting.username": "Imię gracza",
 		"setting.username.about": "Imię gracza, tak jak pokazuje je gra (username w pliku ustawień silnika). Puste oznacza domyślne imię gry. Znaki nowej linii, nawiasy i średniki są pomijane; najwyżej 31 znaków.",
+		"slot.mods": "Mody",
+		"slot.mods.help": "Mody dla programu ładującego mody z dekompilacji: dowolna liczba plików zip, każdy z jednym lub kilkoma folderami modów z ich mod.ini (zip z mod.ini w katalogu głównym to jeden mod o nazwie zipa). Są wczytywane przy starcie gry, w kolejności tej listy, i stanowią część maszyny: film nagrany z modami potrzebuje tych samych modów do odtworzenia. Gdy dwa mody mają ten sam plik, używany jest ten wyżej na liście. Mody złożone z plików danych działają; mod z własnym skompilowanym kodem (LogicFile w jego mod.ini) nie może działać w piaskownicy rdzenia i jest odrzucany. To, co mod zapisze, zostaje wewnątrz maszyny. Nic nie jest pobierane. Zostaw puste, jeśli żadnych.",
 		"slot.savedata": "Dane zapisu",
 		"slot.savedata.help": "Pliki zapisane przez grę, tak jak nadało je Emulator > Eksportuj dane zapisu: SaveData.bin (postęp w plikach zapisu) i wszystkie inne, które gra przechowuje, pod ich własnymi nazwami. Są umieszczane na miejscu przed startem gry, więc gra znajduje je jako swoje."
 	}

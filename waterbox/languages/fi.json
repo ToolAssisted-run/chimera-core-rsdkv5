@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1 ei ole Retro Engine -datatiedosto: sen koko on %2 tavua.",
 		"error.is_not_a_retro_engine_v5": "%1 ei ole Retro Engine v5 -datatiedosto (se ei ala merkkijonolla RSDKv5)",
 		"error.is_too_large_bytes_for_the": "%1 on liian suuri (%2 tavua) ytimen muistiin.",
+		"error.mod_needs_native_code": "Modi %1 (tiedostossa %2) tarvitsee omaa käännettyä koodia (%3), joka ei voi toimia ytimen hiekkalaatikossa. Vain datatiedostoista koostuvia modeja voi käyttää.",
+		"error.mod_wrong_engine": "Modi %1 (tiedostossa %2) on Retro Enginen versiolle %3, ei versiolle 5, jolla Sonic Mania toimii.",
+		"error.mods_could_not_be_read": "Tiedostoa %1 ei voitu lukea kokonaan: zip on vioittunut.",
+		"error.mods_no_mod_ini": "%1 ei sisällä modia: missään sen kansiossa ei ole mod.ini-tiedostoa.",
+		"error.mods_not_zip": "%1 ei ole zip: modit annetaan zip-tiedostona modikansioista, joissa kussakin on mod.ini.",
+		"error.mods_same_folder": "Kaksi modia on nimeltään %1 (jälkimmäinen tiedostossa %2): jokainen modi tarvitsee oman kansionimen.",
+		"error.mods_too_large": "Modit vievät purettuina %1 MiB, enemmän kuin ytimen muistiin mahtuu.",
 		"error.save_data_could_not_be": "Tallennustiedostoa %1 ei voitu avata.",
 		"error.save_data_has_more_than": "Tallennustiedoissa on enemmän kuin %1 tiedostoa.",
 		"error.save_data_is_not_one_this": "Tallennustiedosto %1 ei ole tiedosto, jonka tämä ydin hyväksyy: Settings.ini on projektin asetukset, ja nimi saa olla enintään %2 merkkiä pitkä.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "Kuinka monta pikseliä leveä näyttö on (moottorin pixWidth-asetus). 424 on alkuperäisen oletus, 16:9-näyttö; 320 on 4:3-näyttö. Leveys muuttaa, kuinka pitkälle pelaaja näkee eteensä ja mitkä objektit ovat hereillä, joten se muuttaa peliä, ja tallenne tallentaa sen.",
 		"setting.username": "Pelaajan nimi",
 		"setting.username.about": "Pelaajan nimi sellaisena kuin peli sen näyttää (username moottorin asetustiedostossa). Tyhjä on pelin oma oletus. Rivinvaihdot, hakasulkeet ja puolipisteet jätetään pois; enintään 31 merkkiä.",
+		"slot.mods": "Modit",
+		"slot.mods.help": "Modeja dekompilaation modilataajalle: kuinka monta zip-tiedostoa tahansa, kussakin yksi tai useampi modikansio mod.ini-tiedostoineen (zip, jonka juuressa on mod.ini, on yksi modi, joka nimetään zipin mukaan). Ne ladataan pelin käynnistyessä tämän luettelon järjestyksessä, ja ne ovat osa konetta: modien kanssa tehty elokuva tarvitsee toistuakseen samat modit. Jos kahdella modilla on sama tiedosto, käytetään luettelossa ylempänä olevaa. Datatiedostoista koostuvat modit toimivat; modi, jolla on omaa käännettyä koodia (LogicFile sen mod.ini-tiedostossa), ei voi toimia ytimen hiekkalaatikossa ja hylätään. Se, mitä modi kirjoittaa, jää koneen sisään. Mitään ei ladata verkosta. Jätä tyhjäksi, jos et halua yhtään.",
 		"slot.savedata": "Tallennustiedot",
 		"slot.savedata.help": "Pelin kirjoittamat tiedostot sellaisina kuin Emulator > Export Save Data ne antoi: SaveData.bin (tallennustiedostojen eteneminen) ja kaikki muut, joita peli pitää omilla nimillään. Ne asetetaan paikoilleen ennen pelin alkua, joten peli löytää ne omikseen."
 	}

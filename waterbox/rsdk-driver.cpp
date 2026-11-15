@@ -20,8 +20,10 @@
  *     (240 lines, as wide as the screen setting), with SDL's software
  *     renderer, read back after the frame.
  *
- * The engine is upstream's, built from source with one patch, its software
- * renderer, mixer and video decoder, and no mod loader (docs/PLAN.md).
+ * The engine is upstream's, built from source with the patches in patches/,
+ * its software renderer, mixer and video decoder, and its mod loader, which
+ * reads the project's mods from the machine's memory (rsdk-files.c,
+ * docs/PLAN.md).
  */
 #include <stdint.h>
 #include <stdio.h>

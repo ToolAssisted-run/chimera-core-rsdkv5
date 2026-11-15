@@ -54,8 +54,8 @@ MINIZ_SRCS := $(RSDK)/dependencies/all/miniz/miniz.c
 CODEC_INCS := -Icompat -I$(OGG)/include -I$(THEORA)/include
 
 # ---- the engine: upstream's CMakeLists.txt RETRO_FILES but main.cpp (the core
-# is the frontend) and tinyxml2 (the mod loader is off); miniz is with the
-# codecs above. The backends (SDL 2's video, sound and controllers, the
+# is the frontend), with tinyxml2 (the mod loader reads a mod's Game.xml with
+# it); miniz is with the codecs above. The backends (SDL 2's video, sound and controllers, the
 # keyboard) are compiled inside Graphics/Drawing.cpp, Audio/Audio.cpp and
 # Input/Input.cpp, as upstream has them.
 RSDK_NAMES := Core/RetroEngine Core/Math Core/Reader Core/Link Core/ModAPI Dev/Debug Storage/Storage Storage/Text \
@@ -64,21 +64,27 @@ RSDK_NAMES := Core/RetroEngine Core/Math Core/Reader Core/Link Core/ModAPI Dev/D
 	Scene/Objects/DevOutput User/Core/UserAchievements User/Core/UserCore User/Core/UserLeaderboards \
 	User/Core/UserPresence User/Core/UserStats User/Core/UserStorage
 RSDK_SRCS := $(addprefix $(RSDK)/RSDKv5/RSDK/,$(addsuffix .cpp,$(RSDK_NAMES))) \
-	$(RSDK)/dependencies/all/iniparser/iniparser.cpp $(RSDK)/dependencies/all/iniparser/dictionary.cpp
+	$(RSDK)/dependencies/all/iniparser/iniparser.cpp $(RSDK)/dependencies/all/iniparser/dictionary.cpp \
+	$(RSDK)/dependencies/all/tinyxml2/tinyxml2.cpp
 # As upstream's CMake configures it, with:
 #   RSDK_USE_SDL2=1          SDL 2 for the window, the sound and controllers
 #                            (on Linux upstream's default is GLFW and OpenGL)
 #   RETRO_REVISION=3         RSDKv5U, upstream's default
-#   RETRO_USE_MOD_LOADER=0   no mods: the game is the data file's
+#   RETRO_USE_MOD_LOADER=1   the decompilation's mod loader, for the
+#                            project's mods (chimera#590), with
+#   RSDK_CHIMERA_MOD_FS=1    its mods folder answered by the core from the
+#                            machine's memory, never a disk (mod-fs.hpp,
+#                            patches/0003)
 #   RETRO_STANDALONE=0       the game's logic linked in (Sonic Mania, below),
 #                            not loaded from a library
 #   RSDK_AUTOBUILD=1         every DLC flag off, as the licence requires of a
 #                            build given to anyone (RETRO_DISABLE_PLUS)
-RSDK_DEFS := -DRSDK_USE_SDL2=1 -DRETRO_REVISION=3 -DRETRO_USE_MOD_LOADER=0 -DRETRO_MOD_LOADER_VER=2 \
+RSDK_DEFS := -DRSDK_USE_SDL2=1 -DRETRO_REVISION=3 -DRETRO_USE_MOD_LOADER=1 -DRETRO_MOD_LOADER_VER=2 -DRSDK_CHIMERA_MOD_FS=1 \
 	-DRETRO_STANDALONE=0 -DRSDK_AUTOBUILD=1 -DRETRO_DISABLE_LOG=0 -DRETRO_USE_ORIGINAL_CODE=0 \
 	'-DRETRO_DEV_EXTRA="Chimera"'
-RSDK_CXXFLAGS_COMMON := -std=gnu++17 -O2 $(NO_BUILTIN_MATH) $(RSDK_DEFS) -I$(INC_DIR) -I$(SDL)/include $(CODEC_INCS) \
-	-I$(RSDK)/RSDKv5 -I$(RSDK)/dependencies/all -I$(RSDK)/dependencies/all/iniparser -I$(MANIA)/SonicMania
+RSDK_CXXFLAGS_COMMON := -std=gnu++17 -O2 $(NO_BUILTIN_MATH) $(RSDK_DEFS) -I. -I$(INC_DIR) -I$(SDL)/include $(CODEC_INCS) \
+	-I$(RSDK)/RSDKv5 -I$(RSDK)/dependencies/all -I$(RSDK)/dependencies/all/iniparser -I$(RSDK)/dependencies/all/tinyxml2 \
+	-I$(MANIA)/SonicMania
 
 # ---- Sonic Mania's logic (the Sonic Mania decompilation, extern/SonicMania):
 # Game.c and Objects/All.c, as upstream's CMakeLists.txt builds it without
@@ -87,7 +93,7 @@ RSDK_CXXFLAGS_COMMON := -std=gnu++17 -O2 $(NO_BUILTIN_MATH) $(RSDK_DEFS) -I$(INC
 # function addresses ("not drowning when suspended to a pull chain in HCZ");
 # GCC's -O2 does the same merging (-fipa-icf), so it is off here too.
 MANIA_SRCS := $(MANIA)/SonicMania/Game.c $(MANIA)/SonicMania/Objects/All.c
-MANIA_DEFS := -DRETRO_REVISION=3 -DRETRO_USE_MOD_LOADER=0 -DRETRO_MOD_LOADER_VER=2 -DGAME_INCLUDE_EDITOR=1 \
+MANIA_DEFS := -DRETRO_REVISION=3 -DRETRO_USE_MOD_LOADER=1 -DRETRO_MOD_LOADER_VER=2 -DGAME_INCLUDE_EDITOR=1 \
 	-DMANIA_PREPLUS=0 -DMANIA_FIRST_RELEASE=0 -DGAME_VERSION=6
 MANIA_CFLAGS_COMMON := -std=gnu11 -O2 -fno-ipa-icf $(NO_BUILTIN_MATH) $(MANIA_DEFS) -I$(MANIA)/SonicMania \
 	-I$(MANIA)/SonicMania/Objects
@@ -95,8 +101,8 @@ MANIA_CFLAGS_COMMON := -std=gnu11 -O2 -fno-ipa-icf $(NO_BUILTIN_MATH) $(MANIA_DE
 # ---- the core
 CORE_C_NAMES := rsdk-files seams detmath wbx-entry
 CORE_CXX_NAMES := rsdk-driver game-state
-CORE_HDRS := rsdk-driver.h mania-state.h $(wildcard compat/*/*.h)
-CORE_CFLAGS_COMMON := -std=gnu11 -O2 -I$(INC_DIR) -I$(SDL)/include
+CORE_HDRS := rsdk-driver.h mania-state.h mod-fs.hpp $(wildcard compat/*/*.h)
+CORE_CFLAGS_COMMON := -std=gnu11 -O2 -I$(INC_DIR) -I$(SDL)/include -I$(RSDK)/dependencies/all
 CORE_CXXFLAGS_COMMON := $(RSDK_CXXFLAGS_COMMON)
 
 # ---- the calls the core answers itself

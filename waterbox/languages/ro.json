@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1 nu este un fișier de date Retro Engine: are %2 octeți.",
 		"error.is_not_a_retro_engine_v5": "%1 nu este un fișier de date Retro Engine v5 (nu începe cu RSDKv5)",
 		"error.is_too_large_bytes_for_the": "%1 este prea mare (%2 octeți) pentru memoria nucleului.",
+		"error.mod_needs_native_code": "Modul %1 (din %2) are nevoie de cod compilat propriu (%3), care nu poate rula în mediul izolat al nucleului. Se pot folosi doar moduri făcute din fișiere de date.",
+		"error.mod_wrong_engine": "Modul %1 (din %2) este pentru versiunea %3 a Retro Engine, nu pentru versiunea 5, care rulează Sonic Mania.",
+		"error.mods_could_not_be_read": "%1 nu a putut fi citit în întregime: zip-ul este deteriorat.",
+		"error.mods_no_mod_ini": "%1 nu conține niciun mod: niciun dosar din el nu are mod.ini.",
+		"error.mods_not_zip": "%1 nu este un zip: modurile se dau ca un zip de dosare de mod, fiecare cu mod.ini-ul său.",
+		"error.mods_same_folder": "Două moduri se numesc %1 (al doilea în %2): fiecare mod are nevoie de un nume de dosar propriu.",
+		"error.mods_too_large": "Modurile ocupă %1 MiB dezarhivate, mai mult decât încape în memoria nucleului.",
 		"error.save_data_could_not_be": "Datele salvate %1 nu au putut fi deschise.",
 		"error.save_data_has_more_than": "Datele salvate au mai mult de %1 fișiere.",
 		"error.save_data_is_not_one_this": "Datele salvate %1 nu sunt dintre cele pe care le primește acest nucleu: Settings.ini sunt setările proiectului, iar un nume are cel mult %2 caractere.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "Câți pixeli are ecranul în lățime (setarea pixWidth a motorului). 424 este implicitul proiectului original, un ecran 16:9; 320 este unul 4:3. Lățimea schimbă cât de departe vede jucătorul și ce obiecte sunt active, deci schimbă jocul, iar o înregistrare o reține.",
 		"setting.username": "Numele jucătorului",
 		"setting.username.about": "Numele jucătorului așa cum îl arată jocul (username în fișierul de setări al motorului). Gol înseamnă implicitul jocului. Întreruperile de rând, parantezele și punctele și virgulă sunt scoase; cel mult 31 de caractere.",
+		"slot.mods": "Moduri",
+		"slot.mods.help": "Moduri pentru încărcătorul de moduri al decompilării: oricâte arhive zip, fiecare cu unul sau mai multe dosare de mod cu mod.ini-ul lor (un zip cu mod.ini în rădăcină este un singur mod, numit ca zip-ul). Se încarcă la pornirea jocului, în ordinea acestei liste, și fac parte din mașină: un film făcut cu moduri are nevoie de aceleași moduri ca să fie redat. Când două moduri au același fișier, se folosește cel mai sus în listă. Modurile făcute din fișiere de date funcționează; un mod cu cod compilat propriu (un LogicFile în mod.ini) nu poate rula în mediul izolat al nucleului și este refuzat. Ce scrie un mod rămâne în mașină. Nu se descarcă nimic. Lăsați gol pentru niciunul.",
 		"slot.savedata": "Datele salvate",
 		"slot.savedata.help": "Fișierele scrise de joc, așa cum le-a dat Emulator > Export Save Data: SaveData.bin (progresul fișierelor de salvare) și orice alt fișier pe care îl ține jocul, cu propriile nume. Sunt puse la locul lor înainte ca jocul să pornească, deci jocul le găsește ca fiind ale sale."
 	}

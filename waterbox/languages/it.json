@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1 non è un file dati di Retro Engine: è lungo %2 byte.",
 		"error.is_not_a_retro_engine_v5": "%1 non è un file dati di Retro Engine v5 (non inizia con RSDKv5)",
 		"error.is_too_large_bytes_for_the": "%1 è troppo grande (%2 byte) per la memoria del core.",
+		"error.mod_needs_native_code": "Il mod %1 (in %2) richiede codice compilato proprio (%3), che non può essere eseguito nell'ambiente isolato del core. Si possono usare solo mod fatti di file di dati.",
+		"error.mod_wrong_engine": "Il mod %1 (in %2) è per la versione %3 del Retro Engine, non per la versione 5, che esegue Sonic Mania.",
+		"error.mods_could_not_be_read": "Non è stato possibile leggere per intero %1: lo zip è danneggiato.",
+		"error.mods_no_mod_ini": "%1 non contiene alcun mod: nessuna cartella al suo interno ha un mod.ini.",
+		"error.mods_not_zip": "%1 non è uno zip: i mod si danno come uno zip di cartelle di mod, ciascuna con il suo mod.ini.",
+		"error.mods_same_folder": "Due mod si chiamano %1 (il secondo in %2): ogni mod ha bisogno di un nome di cartella proprio.",
+		"error.mods_too_large": "I mod occupano %1 MiB una volta estratti, più di quanto la memoria del core possa contenere.",
 		"error.save_data_could_not_be": "Impossibile aprire i dati di salvataggio %1.",
 		"error.save_data_has_more_than": "I dati di salvataggio hanno più di %1 file.",
 		"error.save_data_is_not_one_this": "I dati di salvataggio %1 non sono di un tipo accettato da questo core: Settings.ini sono le impostazioni del progetto, e un nome può avere al massimo %2 caratteri.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "Quanti pixel è largo lo schermo (l'impostazione pixWidth del motore). 424 è il valore predefinito del motore originale, uno schermo 16:9; 320 uno 4:3. La larghezza cambia quanto il giocatore vede avanti e quali oggetti sono attivi, quindi cambia il gioco, e un filmato la registra.",
 		"setting.username": "Nome del giocatore",
 		"setting.username.about": "Il nome del giocatore come lo mostra il gioco (username nel file di impostazioni del motore). Vuoto è il valore predefinito del gioco. Interruzioni di riga, parentesi e punti e virgola sono esclusi; al massimo 31 caratteri.",
+		"slot.mods": "Mod",
+		"slot.mods.help": "Mod per il caricatore di mod della decompilazione: quanti zip si vuole, ciascuno con una o più cartelle di mod con il loro mod.ini (uno zip con mod.ini alla radice è un solo mod, con il nome dello zip). Vengono caricati all'avvio del gioco, nell'ordine di questo elenco, e fanno parte della macchina: un filmato fatto con dei mod ha bisogno degli stessi mod per essere riprodotto. Se due mod hanno lo stesso file, si usa quello più in alto nell'elenco. I mod fatti di file di dati funzionano; un mod con codice compilato proprio (un LogicFile nel suo mod.ini) non può essere eseguito nell'ambiente isolato del core e viene rifiutato. Ciò che un mod scrive resta dentro la macchina. Non viene scaricato nulla. Lasciare vuoto per nessuno.",
 		"slot.savedata": "Dati di salvataggio",
 		"slot.savedata.help": "I file scritti dal gioco, come li ha dati Emulatore > Esporta dati di salvataggio: SaveData.bin (l'avanzamento dei file di salvataggio) e ogni altro che il gioco conserva, con i loro nomi. Vengono messi al loro posto prima dell'avvio del gioco, che quindi li trova come suoi."
 	}

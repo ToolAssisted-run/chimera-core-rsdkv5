@@ -7,6 +7,13 @@
 		"error.is_not_a_retro_engine_data": "%1 er ikke en Retro Engine-datafil: den er %2 byte lang.",
 		"error.is_not_a_retro_engine_v5": "%1 er ikke en Retro Engine v5-datafil (den starter ikke med RSDKv5)",
 		"error.is_too_large_bytes_for_the": "%1 er for stor (%2 byte) for kjernens minne.",
+		"error.mod_needs_native_code": "Modden %1 (i %2) trenger egen kompilert kode (%3), som ikke kan kjøre i kjernens sandkasse. Bare modder av datafiler kan brukes.",
+		"error.mod_wrong_engine": "Modden %1 (i %2) er for versjon %3 av Retro Engine, ikke versjon 5, som spiller Sonic Mania.",
+		"error.mods_could_not_be_read": "%1 kunne ikke leses helt: zip-filen er skadet.",
+		"error.mods_no_mod_ini": "%1 inneholder ingen modd: ingen mappe i den har en mod.ini.",
+		"error.mods_not_zip": "%1 er ikke en zip-fil: modder gis som en zip med modmapper, hver med sin mod.ini.",
+		"error.mods_same_folder": "To modder heter %1 (den andre i %2): hver modd trenger sitt eget mappenavn.",
+		"error.mods_too_large": "Moddene blir %1 MiB utpakket, mer enn det er plass til i kjernens minne.",
 		"error.save_data_could_not_be": "Lagringsdataene %1 kunne ikke åpnes.",
 		"error.save_data_has_more_than": "Lagringsdataene har mer enn %1 filer.",
 		"error.save_data_is_not_one_this": "Lagringsdataene %1 er ikke en kjernen tar: Settings.ini er prosjektets innstillinger, og et navn er høyst %2 tegn.",
@@ -50,6 +57,8 @@
 		"setting.screenwidth.about": "Hvor mange piksler bred skjermen er (motorens pixWidth-innstilling). 424 er oppstrøms standard, en 16:9-skjerm; 320 er en 4:3-skjerm. Bredden endrer hvor langt spilleren ser fremover og hvilke objekter som er våkne, så den endrer spillet, og en innspilling lagrer den.",
 		"setting.username": "Spillernavn",
 		"setting.username.about": "Spillerens navn slik spillet viser det (username i motorens innstillingsfil). Tomt gir spillets egen standard. Linjeskift, klammer og semikolon utelates; høyst 31 tegn.",
+		"slot.mods": "Modder",
+		"slot.mods.help": "Modder for dekompileringens modlaster: så mange zip-filer du vil, hver med én eller flere modmapper med sin mod.ini (en zip med mod.ini i roten er én modd, med navnet til zip-filen). De lastes når spillet starter, i rekkefølgen i denne listen, og er en del av maskinen: en film laget med modder trenger de samme moddene for å spilles av. Har to modder samme fil, brukes den som står høyest i listen. Modder av datafiler virker; en modd med egen kompilert kode (en LogicFile i mod.ini) kan ikke kjøre i kjernens sandkasse og avvises. Det en modd skriver, blir inne i maskinen. Ingenting lastes ned. La den stå tom for ingen.",
 		"slot.savedata": "Lagringsdata",
 		"slot.savedata.help": "Filene spillet skrev, slik Emulator > Eksporter lagringsdata ga dem: SaveData.bin (fremdriften i lagrede filer) og alle andre spillet beholder, under sine egne navn. De legges på plass før spillet starter, så spillet finner dem som sine egne."
 	}
